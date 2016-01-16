@@ -11,29 +11,32 @@
 
 namespace Fiedsch\Data;
 
+/**
+ * Class Helper
+ * @package Fiedsch\Data
+ *
+ * A variety of helper functions that might be useful when working with data files.
+ */
+
 class Helper {
 
     /**
      * Spreadsheet Column Number
      *
-     * @param string $name Name of column. (A, B, ..., Z, AA, AB, ...). Case insensitive!
+     * @param string $name Name of column: (A, B, ..., Z, AA, AB, ...), case insensitive.
      * @return int|number zero based index that corresponds to the `$name`
      */
-    public static function SC($name)
-    {
-
+    public static function SC($name) {
         // name consists of a single letter
 
-        if (!preg_match("/^[A-Z]+$/i", $name))
-        {
+        if (!preg_match("/^[A-Z]+$/i", $name)) {
             throw new \RuntimeException("invalid column name '$name'");
         }
 
         // solve longer names recursively
 
-        if (preg_match("/^([A-Z])([A-Z]+)$/i", $name, $matches))
-        {
-            return pow(26, strlen($matches[2])) * (self::SC($matches[1])+1) + self::SC($matches[2]);
+        if (preg_match("/^([A-Z])([A-Z]+)$/i", $name, $matches)) {
+            return pow(26, strlen($matches[2])) * (self::SC($matches[1]) + 1) + self::SC($matches[2]);
         }
 
         return ord(strtoupper($name)) - 64 - 1;

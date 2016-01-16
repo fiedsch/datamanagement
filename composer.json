@@ -1,0 +1,19 @@
+{
+  "name": "fiedsch/datamanagement",
+  "type": "library",
+  "description": "a library with helpers for managing data that is read from text files",
+  "keywords": ["data", "text files", "csv", "tab delimited", "helpers"],
+  "license": "MIT",
+  "authors": [
+    {
+      "name": "Andreas Fieger",
+      "email": "fiedsch@ja-eh.at"
+    }
+  ],
+  "require": {
+    "php": ">=5.4"
+  },
+  "autoload": {
+    "psr-4": { "": "src/" }
+  }
+}

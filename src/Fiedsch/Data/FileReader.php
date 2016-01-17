@@ -5,7 +5,7 @@
  * @author     Andreas Fieger <fiedsch@ja-eh.at>
  * @copyright  2016 Andreas Fieger
  * @license    MIT
- * @version    0.0.2
+ * @version    0.1.1
  * @link       https://github.com/fiedsch/datamanagement
  */
 
@@ -17,7 +17,7 @@ namespace Fiedsch\Data;
  *
  * Read text files line by line.
  *
- * As we are Linux centric we assume, that the following conditions always hold true:
+ * As we are Linux centric, we assume that the following conditions always hold true:
  *
  * - line endings are LF
  *
@@ -28,18 +28,12 @@ namespace Fiedsch\Data;
 
 class FileReader {
 
-    const OPEN = 1;
-    const DONE = 2;
+    const STRICT_EMPTY = true;
 
     /**
      * @var string the absolute path of the file we are working on
      */
     protected $filepath;
-
-    /**
-     * @var int status of the file. One of self::OPEN or self::CLOSE
-     */
-    protected $status;
 
     /**
      * @var int the most recently read line of the file.
@@ -80,8 +74,6 @@ class FileReader {
             throw new\RuntimeException("invalid file handle.");
         }
 
-        $this->status = self::OPEN;
-
         $this->lineNumber = 0;
 
     }
@@ -94,13 +86,17 @@ class FileReader {
     }
 
     /**
-     * @return string return the absolute path for the file
+     * Access the file path.
+     *
+     * @return string return the absolute path for the file.
      */
     public function getFilePath() {
         return $this->filepath;
     }
 
     /**
+     * Read and return the next line from the file.
+     *
      * @return string|null the next line of the file or null if there are no more lines
      */
     public function getLine() {
@@ -111,26 +107,43 @@ class FileReader {
                 return null;
             }
             ++$this->lineNumber;
-            return preg_replace("/\r?\n$/", '', $line);
+            return rtrim($line, "\r\n");
         }
         return null;
     }
 
     /**
-     * @return int the recently read line number
+     * The number of the most recently read line.
+     *
+     * @return int the number of the most recently read line.
      */
     public function getLineNumber() {
         return $this->lineNumber;
     }
 
     /**
-     * close the file
+     * Close the file.
      */
     public function close() {
         if ($this->handle && get_resource_type($this->handle) === 'file') {
             fclose($this->handle);
-            $this->status = self::DONE;
         }
+    }
+
+    /**
+     * Check whether a line is to be considered empty.
+     *
+     * @param string $line the line to check.
+     *
+     * @param boolean $strict if $strict is set to true, ' ' is not considered empty.
+     */
+    // NOTE to self: this function is not static as child classes such as CsvFileReader
+    // need to access class properties as e.g. the delimiter.
+    public function isEmpty($line, $strict = false) {
+        if ($strict) {
+            return $line === '';
+        }
+        return trim($line) === '';
     }
 
 }

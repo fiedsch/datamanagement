@@ -21,24 +21,61 @@ namespace Fiedsch\Data;
 class Helper {
 
     /**
-     * Spreadsheet Column Number
+     * Get the zero based index corresponding to the spreadsheet column (A, B, ..., Z, AA, AB, ...).
      *
-     * @param string $name Name of column: (A, B, ..., Z, AA, AB, ...), case insensitive.
+     * @param string $name Name of the column, case insensitive.
+     *
      * @return int|number zero based index that corresponds to the `$name`
      */
     public static function SC($name) {
         // name consists of a single letter
-
         if (!preg_match("/^[A-Z]+$/i", $name)) {
             throw new \RuntimeException("invalid column name '$name'");
         }
 
         // solve longer names recursively
-
         if (preg_match("/^([A-Z])([A-Z]+)$/i", $name, $matches)) {
             return pow(26, strlen($matches[2])) * (self::SC($matches[1]) + 1) + self::SC($matches[2]);
         }
 
         return ord(strtoupper($name)) - 64 - 1;
     }
+
+    /**
+     * Access an array value at a specific index position specified by its name (cf. Helper::SC()).
+     * See also Helper::getByIndex().
+     *
+     * @param string $name the column name.
+     *
+     * @param array|null $data the data array that supposedly contains the value at index position Helper::SC($name).
+     *
+     * @return string|null the value or null if the column does not exist.
+     */
+    public static function getBySC($data, $name) {
+        return self::getByIndex($data, self::SC($name));
+    }
+
+    /**
+     * Access an array value at a specific index position. Does not issue a warning like
+     *  directly accessing $data[$index] when $data[$index] is not set!
+     *
+     * @param int $index the numerical column index.
+     *
+     * @param array|null $data the data array that supposedly contains the value at index position $index.
+     *
+     * @return string|null the value or null if the column does not exist.
+     */
+    public static function getByIndex($data, $index) {
+        if (null === $data) {
+            return null;
+        }
+        if (!is_array($data)) {
+            return null;
+        }
+        if (!isset($data[$index])) {
+            return null;
+        }
+        return $data[$index];
+    }
+
 }

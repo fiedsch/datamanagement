@@ -1,4 +1,4 @@
 vendor/
 tests/
 run.sh
-us-500.csv
+testdata.*

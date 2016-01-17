@@ -39,20 +39,24 @@ class CsvFileReader extends FileReader {
     protected $escape;
 
     /**
-     * @var array
+     * @var array the file might contain a header (column names) in its first row.
      */
     private $header;
 
 
     /**
-     * @param string $filepath
+     * Constructor.
+     *
+     * @param string $filepath a relative or absolute path to the file.
+     *
      * @param string $delimiter the delimiter that separates columns in the file.
+     *
      * @param string $enclosure (optional, default value is '"') the character that is used for
      *    enclosing column values.
+     *
      * @param string $escape (optional, default value is '\') the character used for escaping.
      *
-     * For `$delimiter`, `$enclosure`, and `$escape` see also http://php.net/manual/en/function.str-getcsv.php
-     *
+     * For `$delimiter`, `$enclosure`, and `$escape` see also http://php.net/manual/en/function.str-getcsv.php.
      */
     public function __construct($filepath, $delimiter, $enclosure = '"', $escape = "\\") {
         parent::__construct($filepath);
@@ -63,28 +67,36 @@ class CsvFileReader extends FileReader {
     }
 
     /**
-     * @return string the delimiter that separates columns in the file
+     * Access the delimiter.
+     *
+     * @return string the delimiter that separates columns in the file.
      */
     public function getDelimiter() {
         return $this->delimiter;
     }
 
     /**
-     * @return string the character that is used to enclose column values
+     * Access the enclosure.
+     *
+     * @return string the character that is used to enclose column values.
      */
     public function getEnclosure() {
         return $this->enclosure;
     }
 
     /**
-     * @return string the optional character that is used for escapeing
+     * Access the escpe.
+     *
+     * @return string the optional character that is used for escapeing.
      */
     public function getEscape() {
         return $this->escape;
     }
 
     /**
-     * @return array|null the data from next line of the file or null if there are no more lines
+     * Read and return the next line from the file.
+     *
+     * @return array|null the data from next line of the file or null if there are no more lines.
      */
     public function getLine() {
         $line = parent::getLine();
@@ -96,6 +108,7 @@ class CsvFileReader extends FileReader {
 
     /**
      * Read the first line of the file and use it as header (column names).
+     *
      * @throws Exception if the current line is > 0, i.e. data was already read.
      */
     public function readHeader() {
@@ -107,9 +120,26 @@ class CsvFileReader extends FileReader {
     }
 
     /**
-     * @return array|null the
+     * Access the previously read header.
+     *
+     * @return array|null the file's header (first row).
      */
     public function getHeader() {
         return $this->header;
     }
+
+    /**
+     * Check whether a line is to be considered empty.
+     *
+     * @param array $line the line to check.
+     *
+     * @param boolean $strict controls how to compare "empty" strings (see also FileReader::isEmpty()).
+     */
+    public function isEmpty($line, $strict = false) {
+        $test = array_filter($line, function ($element) use ($strict) {
+            return !FileReader::isEmpty($element, $strict);
+        });
+        return empty($test);
+    }
+
 }

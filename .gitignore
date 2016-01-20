@@ -2,3 +2,4 @@ vendor/
 tests/
 run.sh
 testdata.*
+composer.lock

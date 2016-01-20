@@ -113,7 +113,7 @@ class Augmentor extends Container {
     }
 
     /**
-     * Syntactic sugar. Use Augmentor::rule('foo') to get the proper key for the email rule
+     * Syntactic sugar. Use Augmentor::rule('foo') to get the proper key for the 'foo' rule
      * (identical to using Augmentor::PREFIX_RULE.$name, but hopefully easier to read).
      *
      * @param string $name the rule's name

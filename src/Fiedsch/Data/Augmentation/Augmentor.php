@@ -48,20 +48,22 @@ class Augmentor extends Container {
      *
      * @param array $data contains the data of the current row.
      *
-     * @return array the augmented data.
+     * @return array the original data (left unchanged) and the augmented data.
      */
     public function augment($data) {
-        // initialize augmented data
-        $augmented = array();
-        $this[self::KEY_AUGMENTED] = $augmented;
+        // initialize
+        $this[self::KEY_AUGMENTED] = array();
+        // get rules
         $rulekeys = array_filter($this->keys(), function($key) { return strpos($key, self::PREFIX_RULE) === 0; });
+        // apply rules
         foreach ($rulekeys as $rulename) {
-            $augmented = array_merge($augmented, $this[$rulename]($this, $data));
-            $this[self::KEY_AUGMENTED] = $augmented; // make the augmented data so far available to the next rule
+            $augmentation_step = $this[$rulename]($this, $data);
+            // make the augmented data so far available to the next rule
+            $this[self::KEY_AUGMENTED] = array_merge($this[self::KEY_AUGMENTED], $augmentation_step);
         }
         return array(
             self::KEY_DATA      => $data,
-            self::KEY_AUGMENTED => $augmented,
+            self::KEY_AUGMENTED => $this[self::KEY_AUGMENTED],
         );
     }
 

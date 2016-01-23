@@ -9,12 +9,12 @@
  * @link       https://github.com/fiedsch/datamanagement
  */
 
-namespace Fiedsch\Data\Augmentation\Services;
+namespace Fiedsch\Data\Augmentation\Provider;
 
 use Pimple\Container;
 use  Pimple\ServiceProviderInterface;
 
-class TokenService implements ServiceProviderInterface {
+class TokenServiceProvider implements ServiceProviderInterface {
 
     protected $container;
 

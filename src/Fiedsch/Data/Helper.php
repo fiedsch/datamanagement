@@ -49,10 +49,13 @@ class Helper {
      *
      * @param array|null $data the data array that supposedly contains the value at index position Helper::SC($name).
      *
+     * @param boolean $trim apply trim() to the value. Defaults to true as surrounding whitespace is
+     * normally not significant.
+     *
      * @return string|null the value or null if the column does not exist.
      */
-    public static function getBySC($data, $name) {
-        return self::getByIndex($data, self::SC($name));
+    public static function getBySC($data, $name, $trim = true) {
+        return self::getByIndex($data, self::SC($name), $trim);
     }
 
     /**
@@ -63,9 +66,12 @@ class Helper {
      *
      * @param array|null $data the data array that supposedly contains the value at index position $index.
      *
+     * @param boolean $trim apply trim() to the value. Defaults to true as surrounding whitespace is
+     * normally not significant.
+     *
      * @return string|null the value or null if the column does not exist.
      */
-    public static function getByIndex($data, $index) {
+    public static function getByIndex($data, $index, $trim = true) {
         if (null === $data) {
             return null;
         }
@@ -75,7 +81,8 @@ class Helper {
         if (!isset($data[$index])) {
             return null;
         }
-        return $data[$index];
+
+        return $trim ? trim($data[$index]) : $data[$index];
     }
 
 }

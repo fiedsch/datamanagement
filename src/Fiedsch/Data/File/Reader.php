@@ -9,7 +9,7 @@
  * @link       https://github.com/fiedsch/datamanagement
  */
 
-namespace Fiedsch\Data;
+namespace Fiedsch\Data\File;
 
 /**
  * Class FileReader
@@ -26,7 +26,7 @@ namespace Fiedsch\Data;
  * If this is not the case: convert input data first! iconv will be your friend.
  */
 
-class FileReader {
+class Reader {
 
     const STRICT_EMPTY = true;
 

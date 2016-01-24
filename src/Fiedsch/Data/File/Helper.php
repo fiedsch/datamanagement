@@ -9,7 +9,7 @@
  * @link       https://github.com/fiedsch/datamanagement
  */
 
-namespace Fiedsch\Data;
+namespace Fiedsch\Data\File;
 
 /**
  * Class Helper

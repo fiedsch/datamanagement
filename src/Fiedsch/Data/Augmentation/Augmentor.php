@@ -22,10 +22,7 @@ use Pimple\Container;
  * The rules operate on a line by line basis (data record), i.e. only values
  * of the current line can be used to augment the line.
  */
-
 class Augmentor extends Container {
-
-    const PREFIX_GLOBAL_ARRAY = '_global_array.';
 
     const PREFIX_RULE = 'rule.';
 
@@ -54,7 +51,9 @@ class Augmentor extends Container {
         // initialize
         $this[self::KEY_AUGMENTED] = array();
         // get rules
-        $rulekeys = array_filter($this->keys(), function($key) { return strpos($key, self::PREFIX_RULE) === 0; });
+        $rulekeys = array_filter($this->keys(), function ($key) {
+            return strpos($key, self::PREFIX_RULE) === 0;
+        });
         // apply rules
         foreach ($rulekeys as $rulename) {
             $augmentation_step = $this[$rulename]($this, $data);
@@ -62,43 +61,9 @@ class Augmentor extends Container {
             $this[self::KEY_AUGMENTED] = array_merge($this[self::KEY_AUGMENTED], $augmentation_step);
         }
         return array(
-            self::KEY_DATA      => $data,
+            self::KEY_DATA => $data,
             self::KEY_AUGMENTED => $this[self::KEY_AUGMENTED],
         );
-    }
-
-
-    /**
-     * Helper/Hack. Needed, as
-     * ```
-     * $this[$name][] = $value;
-     * ```
-     * won't work.
-     *
-     * Plus: avoid accessing a (previously) not set property that would throw an exception.
-     *
-     * @param string $name
-     * @param string $value
-     */
-    public function appendToGlobal($name, $value) {
-        $key = self::PREFIX_GLOBAL_ARRAY.$name;
-        if (!$this->offsetExists($key)) {
-            $this[$key] = array();
-        }
-        $temp = $this[$key];
-        $temp[] = $value;
-        $this[$key] = $temp;
-    }
-
-    /**
-     * @param string $name key for the globally stored array value
-     *
-     * @return array|mixed
-     */
-    public function getGlobal($name) {
-        $key = self::PREFIX_GLOBAL_ARRAY.$name;
-        if (!$this->offsetExists($key)) { return array(); }
-        return $this[$key];
     }
 
     /**
@@ -119,9 +84,11 @@ class Augmentor extends Container {
      * (identical to using Augmentor::PREFIX_RULE.$name, but hopefully easier to read).
      *
      * @param string $name the rule's name
+     *
+     * @return string key used to store the rule
      */
     public static function rule($name) {
-        return self::PREFIX_RULE.$name;
+        return self::PREFIX_RULE . $name;
     }
 
 }

@@ -25,7 +25,7 @@ class TokenCreator {
 
     protected $generated;
 
-    public function __construct($length = 10, $case = self::UPPER) {
+    public function __construct($length = self::DEFAULT_LENGTH, $case = self::UPPER) {
         if (!is_int($length) || $length < 1) {
             throw new \RuntimeException("token length must be an integer");
         }
@@ -61,9 +61,9 @@ class TokenCreator {
     }
 
     /**
-     * Generate a token according to the rules (length and case)
+     * Generate a random token according to the rules (length and case)
      *
-     * @return string a Token
+     * @return string a randomly generated token
      */
     protected function cretateToken() {
 
@@ -71,12 +71,12 @@ class TokenCreator {
         // if someone has to type the token
 
         $bad_characters = array(
-            'i' => 'a', // might be confused with 1
-            'l' => '2', // see 'i'
-            'o' => 'b', // might be confused with 0 (zero)
-            '1' => '3', // see 'i'
-            '0' => 'd', // see 'o'
-            'e' => '4', // if we use the results in Excel it might try to convert 'e123' to a number :-(
+            'i' => '2', // might be confused with 1
+            'l' => 'a', // see 'i'
+            'o' => '3', // might be confused with 0 (zero)
+            '1' => 'b', // see 'i'
+            '0' => '4', // see 'o'
+            'e' => 'd', // if we use the results in Excel it might try to convert 'e123' to a number :-(
         );
 
         $token = '';
@@ -91,6 +91,10 @@ class TokenCreator {
         // shorten to length
 
         $token = substr($token, 0, $this->length);
+
+        // we don't want purely numeric tokens
+
+        if (is_numeric($token)) { $token = 'x' . substr($token, 1); }
 
         // convert to case
 

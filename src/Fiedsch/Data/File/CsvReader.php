@@ -8,10 +8,10 @@
  * @link       https://github.com/fiedsch/datamanagement
  */
 
-namespace Fiedsch\Data;
+namespace Fiedsch\Data\File;
 
 /**
- * Class CsvFileReader
+ * Class CsvReader
  * @package Fiedsch\Data
  *
  * Read a CSV file line by line and return an array of data per line.
@@ -20,7 +20,7 @@ namespace Fiedsch\Data;
  * @see FileReader for more information.
  */
 
-class CsvFileReader extends FileReader {
+class CsvReader extends Reader {
 
     /**
      * @var string the delimiter that separates columns in the file.
@@ -137,7 +137,7 @@ class CsvFileReader extends FileReader {
      */
     public function isEmpty($line, $strict = false) {
         $test = array_filter($line, function ($element) use ($strict) {
-            return !FileReader::isEmpty($element, $strict);
+            return !Reader::isEmpty($element, $strict);
         });
         return empty($test);
     }

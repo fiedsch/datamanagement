@@ -31,20 +31,22 @@ class UniquenessChecker {
      *
      * @param boolean $strict if set to true string comparisons will be case sensitive
      *
-     * @return boolean
+     * @return string '0' or '1' indicating false or true respectively.
+     *   (string instead of boolean as the result will be written
+     *   to as new data file and false would result in '').
      */
     public function isNew($value, $category = self::NO_KEY, $strict = false) {
 
-        $result = true;
+        $result = '1';
 
-        $value = $strict && is_string($value) ? strtolower($value) : $value;
+        $value = $strict ? $value : strtolower($value);
 
         if (!isset($this->data[$category]) || !is_array($this->data[$category])) {
             $this->data[$category] = [ ];
         }
 
         if (array_key_exists($value, $this->data[$category])) {
-            $result = false;
+            $result = '0';
         }
 
         if (!isset($this->data[$category][$value])) {

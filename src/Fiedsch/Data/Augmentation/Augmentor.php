@@ -30,6 +30,8 @@ class Augmentor extends Container {
 
     const KEY_AUGMENTED = 'augmented';
 
+    const KEY_COLNAMES = 'required_columns';
+
     /**
      * Constructor
      *
@@ -60,10 +62,33 @@ class Augmentor extends Container {
             // make the augmented data so far available to the next rule
             $this[self::KEY_AUGMENTED] = array_merge($this[self::KEY_AUGMENTED], $augmentation_step);
         }
+        $this->checkAugmented();
         return array(
             self::KEY_DATA => $data,
             self::KEY_AUGMENTED => $this[self::KEY_AUGMENTED],
         );
+    }
+
+    /**
+     * @param array $colnames the names of the columns that have to be set during the
+     *   augmentation steps.
+     */
+    public function setRequiredColumns(array $colnames) {
+        $this[self::KEY_COLNAMES] = $colnames;
+    }
+
+    /**
+     * Check if all of the required columns (fields) have been set during the augmentaion steps.
+     * Throw an exception if a column is missing.
+     */
+    protected function checkAugmented() {
+        if ($this->offsetExists(self::KEY_COLNAMES) && is_array($this[self::KEY_COLNAMES])) {
+            foreach ($this[self::KEY_COLNAMES] as $key) {
+                if (!array_key_exists($key, $this[self::KEY_AUGMENTED])) {
+                    throw new \RuntimeException("required field '$key' does not exist in augmented data'");
+                }
+            }
+        }
     }
 
     /**

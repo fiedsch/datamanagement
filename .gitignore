@@ -3,4 +3,5 @@ tests/
 run.sh
 ideas.md
 testdata.*
+tokens.txt
 composer.lock

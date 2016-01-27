@@ -10,6 +10,17 @@
 
 namespace Fiedsch\Data\Utility;
 
+use Fiedsch\Data\File\CsvReader;
+
+/*
+ * FIXME: in case of self::MIXED case tokens make sure we will note generate
+ * 'Abc1' and 'aBc1' which are technically two destinct tokens but look the
+ * same to humans (or software that does its comparisons case insensitive).
+ *
+ * If we use all LOWER or all UPPER tokens this can not happen.
+ * So maybe MIXED is not a good idea and should be removed?
+ */
+
 
 class TokenCreator {
 
@@ -25,6 +36,8 @@ class TokenCreator {
 
     protected $generated;
 
+    protected $readFromFile;
+
     public function __construct($length = self::DEFAULT_LENGTH, $case = self::UPPER) {
         if (!is_int($length) || $length < 1) {
             throw new \RuntimeException("token length must be an integer");
@@ -36,6 +49,7 @@ class TokenCreator {
         $this->length = $length;
         $this->case = $case;
         $this->generated = [ ];
+        $this->readFromFile = null;
     }
 
     /**
@@ -67,21 +81,44 @@ class TokenCreator {
      */
     protected function cretateToken() {
 
+        // if we have read tokens from file, use them
+        if (null !== $this->readFromFile) {
+            if (count($this->readFromFile) == 0) {
+                throw new \LogicException("you requested more tokens than were read from file");
+            }
+            $token = array_shift($this->readFromFile);
+            // check requirements
+            if (strlen($token) < $this->length) {
+                throw new \LogicException(
+                    sprintf("tokens read from file are too short (current length setting is '%s').",
+                        $this->length
+                    ));
+            }
+            if ($this->case == self::LOWER && preg_match("/[A-Z]/", $token)) {
+                throw new \LogicException("you requestet LOWERcase tokens but the file contsins uppercase letters");
+            }
+            if ($this->case == self::UPPER && preg_match("/[a-z]/", $token)) {
+                throw new \LogicException("you requestet UPPERcase tokens but the file contsins lowercase letters");
+            }
+            return $token;
+        }
+
         // characters we want to omit in generated tokens as they can be confused
         // if someone has to type the token
 
         $bad_characters = array(
-            'i' => '2', // might be confused with 1
+            'i' => '2', // 'i'  (esp. 'I') might be confused with '1' (one) or 'l' (lowercase L)
             'l' => 'a', // see 'i'
-            'o' => '3', // might be confused with 0 (zero)
-            '1' => 'b', // see 'i'
+            '1' => '3', // see 'i'
+            'o' => 'b', // 'o' might be confused with '0' (zero)
             '0' => '4', // see 'o'
-            'e' => 'd', // if we use the results in Excel it might try to convert 'e123' to a number :-(
+            'e' => 'c', // if we use the results in Excel and the like, they might try
+                        // to convert '123e4' to a number :-(
         );
 
         $token = '';
         while (strlen($token) < $this->length) {
-            $token .= sha1(rand());
+                $token .= sha1(rand());
         }
 
         // replace characters that might be confusing
@@ -117,6 +154,25 @@ class TokenCreator {
         }
 
         return $token;
+    }
+
+    /**
+     * @param string $filepath the path to a file containing tokens (one on every line
+     *  with no header!).
+     *
+     * @param string $delimiter as expected by Fiedsch\Data\File\CsvReader
+     */
+    public function readFromFile($filepath, $delimiter = "\t") {
+        $reader = new CsvReader($filepath, $delimiter);
+        $result = [ ];
+        while (($line = $reader->getLine()) !== null) {
+            if (!$reader->isEmpty($line)) {
+                $result[] = $line[0]; // we expect the token in the first column
+                // the second column might contain further info such as "use this many times"
+            }
+        }
+
+        $this->readFromFile = $result;
     }
 
 }

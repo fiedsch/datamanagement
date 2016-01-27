@@ -15,6 +15,12 @@ use Pimple\Container;
 use Pimple\ServiceProviderInterface;
 use Fiedsch\Data\Utility\Validator;
 
+/*
+ * Note: with the current Validator there is not really a point in having
+ * a service. One could simply call Validator::isValidEmail() instead.
+ * We'll see if there will be real use cases.
+ */
+
 class ValidationServiceProvider implements ServiceProviderInterface {
 
     /**

@@ -94,7 +94,8 @@ class Augmentor extends Container {
     /**
      * Access the data that has been augmented so far in the previous augmentation steps.
      *
-     * @return array the augmented data so far
+     * @return array the augmented data so far (or an empty array, should this be called in the
+     *   first augmentation step).
      */
     public function getAugmentedSoFar() {
         if (!$this->offsetExists(self::KEY_AUGMENTED)) {
@@ -112,8 +113,18 @@ class Augmentor extends Container {
      *
      * @return string key used to store the rule
      */
-    public static function rule($name) {
+    protected static function rule($name) {
         return self::PREFIX_RULE . $name;
+    }
+
+    /**
+     * Add an augmentation rule.
+     *
+     * @param string $name the name of the augmentation rule
+     * @param callable $rule the code that will be executed
+     */
+    public function addRule($name, $rule) {
+        $this[self::rule($name)] = $this->protect($rule);
     }
 
 }

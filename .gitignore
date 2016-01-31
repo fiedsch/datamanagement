@@ -1,5 +1,5 @@
 vendor/
-tests/
+examples/
 run.sh
 ideas.md
 testdata.*

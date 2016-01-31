@@ -24,7 +24,7 @@ use Fiedsch\Data\Utility\Validator;
 class ValidationServiceProvider implements ServiceProviderInterface {
 
     /**
-     * @param Container $pimple the dependency injection container.
+     * @param Container $container the dependency injection container.
      */
     public function register(Container $container) {
 

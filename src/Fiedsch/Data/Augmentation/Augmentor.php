@@ -127,4 +127,41 @@ class Augmentor extends Container {
         $this[self::rule($name)] = $this->protect($rule);
     }
 
+
+    /**
+     * Append to an already stored array.
+     *
+     * @param string $key the key under which we have previously stored data.
+     * @param mixed $value the value which we want to append to the existing data.
+     *
+     * Note, that the following will not work:
+     * <code>
+     * $container['foo'] = array('bar','baz');
+     * $container['foo'][] = 42;
+     * </code>
+     *
+     * See also: https://github.com/silexphp/Pimple/issues/149
+     * <quote>
+     * fabpot commented on Jul 15, 2014
+     * To be more precise, Pimple stores parameters but it should have
+     * no knowledge of the parameter value; Pimple just stores what you give it.
+     * </quote>
+     */
+    public function appendTo($key, $value) {
+        if (!$this->offsetExists($key)) {
+            $this[$key] = [ $value ];
+            return;
+        }
+        $old_value = $this[$key];
+        if (!is_array($old_value)) {
+            $old_value = [ $old_value ];
+        }
+        if (is_array($value)) {
+            $old_value = array_merge($old_value, $value);
+        } else {
+            $old_value[] = $value;
+        }
+        $this[$key] = $old_value;
+    }
+
 }

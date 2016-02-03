@@ -4,7 +4,6 @@
  * @author     Andreas Fieger <fiedsch@ja-eh.at>
  * @copyright  2016 Andreas Fieger
  * @license    MIT
- * @version    0.1.1
  * @link       https://github.com/fiedsch/datamanagement
  */
 
@@ -20,7 +19,8 @@ namespace Fiedsch\Data\File;
  * @see FileReader for more information.
  */
 
-class CsvReader extends Reader {
+class CsvReader extends Reader
+{
 
     /**
      * @var string the delimiter that separates columns in the file.
@@ -58,7 +58,8 @@ class CsvReader extends Reader {
      *
      * For `$delimiter`, `$enclosure`, and `$escape` see also http://php.net/manual/en/function.str-getcsv.php.
      */
-    public function __construct($filepath, $delimiter, $enclosure = '"', $escape = "\\") {
+    public function __construct($filepath, $delimiter, $enclosure = '"', $escape = "\\")
+    {
         parent::__construct($filepath);
         $this->delimiter = $delimiter;
         $this->enclosure = $enclosure;
@@ -71,7 +72,8 @@ class CsvReader extends Reader {
      *
      * @return string the delimiter that separates columns in the file.
      */
-    public function getDelimiter() {
+    public function getDelimiter()
+    {
         return $this->delimiter;
     }
 
@@ -80,7 +82,8 @@ class CsvReader extends Reader {
      *
      * @return string the character that is used to enclose column values.
      */
-    public function getEnclosure() {
+    public function getEnclosure()
+    {
         return $this->enclosure;
     }
 
@@ -89,7 +92,8 @@ class CsvReader extends Reader {
      *
      * @return string the optional character that is used for escapeing.
      */
-    public function getEscape() {
+    public function getEscape()
+    {
         return $this->escape;
     }
 
@@ -98,7 +102,8 @@ class CsvReader extends Reader {
      *
      * @return array|null the data from next line of the file or null if there are no more lines.
      */
-    public function getLine() {
+    public function getLine()
+    {
         $line = parent::getLine();
         if ($line !== null) {
             return str_getcsv($line, $this->delimiter, $this->enclosure, $this->escape);
@@ -111,7 +116,8 @@ class CsvReader extends Reader {
      *
      * @throws Exception if the current line is > 0, i.e. data was already read.
      */
-    public function readHeader() {
+    public function readHeader()
+    {
         if ($this->lineNumber > 0) {
             throw new \RuntimeException("can not read header when data was already read.");
         }
@@ -124,7 +130,8 @@ class CsvReader extends Reader {
      *
      * @return array|null the file's header (first row).
      */
-    public function getHeader() {
+    public function getHeader()
+    {
         return $this->header;
     }
 
@@ -135,7 +142,8 @@ class CsvReader extends Reader {
      *
      * @param boolean $strict controls how to compare "empty" strings (see also FileReader::isEmpty()).
      */
-    public function isEmpty($line, $strict = false) {
+    public function isEmpty($line, $strict = false)
+    {
         $test = array_filter($line, function ($element) use ($strict) {
             return !Reader::isEmpty($element, $strict);
         });

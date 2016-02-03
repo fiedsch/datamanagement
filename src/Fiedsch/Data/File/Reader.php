@@ -5,7 +5,6 @@
  * @author     Andreas Fieger <fiedsch@ja-eh.at>
  * @copyright  2016 Andreas Fieger
  * @license    MIT
- * @version    0.1.1
  * @link       https://github.com/fiedsch/datamanagement
  */
 
@@ -26,7 +25,8 @@ namespace Fiedsch\Data\File;
  * If this is not the case: convert input data first! iconv will be your friend.
  */
 
-class Reader {
+class Reader
+{
 
     const STRICT_EMPTY = true;
 
@@ -44,7 +44,8 @@ class Reader {
      * @param string $filepath an absolute or relative path to a file. In case of a relative path
      *        the current working directory is prefixed to the path to make it absolute.
      */
-    public function __construct($filepath) {
+    public function __construct($filepath)
+    {
 
         $realpath = $filepath;
 
@@ -81,7 +82,8 @@ class Reader {
     /**
      * Destructor
      */
-    public function __destruct() {
+    public function __destruct()
+    {
         $this->close();
     }
 
@@ -90,7 +92,8 @@ class Reader {
      *
      * @return string return the absolute path for the file.
      */
-    public function getFilePath() {
+    public function getFilePath()
+    {
         return $this->filepath;
     }
 
@@ -99,7 +102,8 @@ class Reader {
      *
      * @return string|null the next line of the file or null if there are no more lines
      */
-    public function getLine() {
+    public function getLine()
+    {
         if ($this->handle) {
             $line = fgets($this->handle);
             if ($line === false) {
@@ -117,14 +121,16 @@ class Reader {
      *
      * @return int the number of the most recently read line.
      */
-    public function getLineNumber() {
+    public function getLineNumber()
+    {
         return $this->lineNumber;
     }
 
     /**
      * Close the file.
      */
-    public function close() {
+    public function close()
+    {
         if ($this->handle && get_resource_type($this->handle) === 'file') {
             fclose($this->handle);
         }
@@ -139,7 +145,8 @@ class Reader {
      */
     // NOTE to self: this function is not static as child classes such as CsvFileReader
     // need to access class properties as e.g. the delimiter.
-    public function isEmpty($line, $strict = false) {
+    public function isEmpty($line, $strict = false)
+    {
         if ($strict) {
             return $line === '';
         }

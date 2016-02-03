@@ -5,22 +5,23 @@
  * @author     Andreas Fieger <fiedsch@ja-eh.at>
  * @copyright  2016 Andreas Fieger
  * @license    MIT
- * @version    0.0.1
  * @link       https://github.com/fiedsch/datamanagement
  */
 
 namespace Fiedsch\Data\Augmentation\Provider;
 
+use Fiedsch\Data\Utility\TokenCreator;
 use Pimple\Container;
 use Pimple\ServiceProviderInterface;
-use Fiedsch\Data\Utility\TokenCreator;
 
-class TokenServiceProvider implements ServiceProviderInterface {
+class TokenServiceProvider implements ServiceProviderInterface
+{
 
     /**
      * @param Container $pimple the dependency injection container.
      */
-    public function register(Container $container) {
+    public function register(Container $container)
+    {
 
         if (!$container->offsetExists('token.length')) {
             $container['token.length'] = TokenCreator::DEFAULT_LENGTH;

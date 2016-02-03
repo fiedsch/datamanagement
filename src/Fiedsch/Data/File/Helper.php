@@ -5,7 +5,6 @@
  * @author     Andreas Fieger <fiedsch@ja-eh.at>
  * @copyright  2016 Andreas Fieger
  * @license    MIT
- * @version    0.0.1
  * @link       https://github.com/fiedsch/datamanagement
  */
 
@@ -18,7 +17,8 @@ namespace Fiedsch\Data\File;
  * A variety of helper functions that might be useful when working with data files.
  */
 
-class Helper {
+class Helper
+{
 
     /**
      * Get the zero based index corresponding to the spreadsheet column (A, B, ..., Z, AA, AB, ...).
@@ -27,7 +27,8 @@ class Helper {
      *
      * @return int|number zero based index that corresponds to the `$name`
      */
-    public static function SC($name) {
+    public static function SC($name)
+    {
         // name consists of a single letter
         if (!preg_match("/^[A-Z]+$/i", $name)) {
             throw new \RuntimeException("invalid column name '$name'");
@@ -54,7 +55,8 @@ class Helper {
      *
      * @return string|null the value or null if the column does not exist.
      */
-    public static function getBySC($data, $name, $trim = true) {
+    public static function getBySC($data, $name, $trim = true)
+    {
         return self::getByIndex($data, self::SC($name), $trim);
     }
 
@@ -71,7 +73,8 @@ class Helper {
      *
      * @return string|null the value or null if the column does not exist.
      */
-    public static function getByIndex($data, $index, $trim = true) {
+    public static function getByIndex($data, $index, $trim = true)
+    {
         if (null === $data) {
             return null;
         }

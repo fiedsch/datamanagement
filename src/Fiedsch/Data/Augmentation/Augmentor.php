@@ -5,7 +5,6 @@
  * @author     Andreas Fieger <fiedsch@ja-eh.at>
  * @copyright  2016 Andreas Fieger
  * @license    MIT
- * @version    0.0.1
  * @link       https://github.com/fiedsch/datamanagement
  */
 
@@ -22,7 +21,8 @@ use Pimple\Container;
  * The rules operate on a line by line basis (data record), i.e. only values
  * of the current line can be used to augment the line.
  */
-class Augmentor extends Container {
+class Augmentor extends Container
+{
 
     const PREFIX_RULE = 'rule.';
 
@@ -37,7 +37,8 @@ class Augmentor extends Container {
      *
      * @param array $values
      */
-    public function __construct($values = array()) {
+    public function __construct($values = array())
+    {
         parent::__construct($values);
     }
 
@@ -49,7 +50,8 @@ class Augmentor extends Container {
      *
      * @return array the original data (left unchanged) and the augmented data.
      */
-    public function augment($data) {
+    public function augment($data)
+    {
         // initialize
         $this[self::KEY_AUGMENTED] = array();
         // get rules
@@ -73,7 +75,8 @@ class Augmentor extends Container {
      * @param array $colnames the names of the columns that have to be set during the
      *   augmentation steps.
      */
-    public function setRequiredColumns(array $colnames) {
+    public function setRequiredColumns(array $colnames)
+    {
         $this[self::KEY_COLNAMES] = $colnames;
     }
 
@@ -81,7 +84,8 @@ class Augmentor extends Container {
      * Check if all of the required columns (fields) have been set during the augmentaion steps.
      * Throw an exception if a column is missing.
      */
-    protected function checkAugmented() {
+    protected function checkAugmented()
+    {
         if ($this->offsetExists(self::KEY_COLNAMES) && is_array($this[self::KEY_COLNAMES])) {
             foreach ($this[self::KEY_COLNAMES] as $key) {
                 if (!array_key_exists($key, $this[self::KEY_AUGMENTED])) {
@@ -97,12 +101,12 @@ class Augmentor extends Container {
      * @return array the augmented data so far (or an empty array, should this be called in the
      *   first augmentation step).
      */
-    public function getAugmentedSoFar() {
+    public function getAugmentedSoFar()
+    {
         if (!$this->offsetExists(self::KEY_AUGMENTED)) {
             $this[self::KEY_AUGMENTED] = array();
         }
         return $this[self::KEY_AUGMENTED];
-
     }
 
     /**
@@ -113,7 +117,8 @@ class Augmentor extends Container {
      *
      * @return string key used to store the rule
      */
-    protected static function rule($name) {
+    protected static function rule($name)
+    {
         return self::PREFIX_RULE . $name;
     }
 
@@ -123,7 +128,8 @@ class Augmentor extends Container {
      * @param string $name the name of the augmentation rule
      * @param callable $rule the code that will be executed
      */
-    public function addRule($name, $rule) {
+    public function addRule($name, $rule)
+    {
         $this[self::rule($name)] = $this->protect($rule);
     }
 
@@ -147,14 +153,15 @@ class Augmentor extends Container {
      * no knowledge of the parameter value; Pimple just stores what you give it.
      * </quote>
      */
-    public function appendTo($key, $value) {
+    public function appendTo($key, $value)
+    {
         if (!$this->offsetExists($key)) {
-            $this[$key] = [ $value ];
+            $this[$key] = [$value];
             return;
         }
         $old_value = $this[$key];
         if (!is_array($old_value)) {
-            $old_value = [ $old_value ];
+            $old_value = [$old_value];
         }
         if (is_array($value)) {
             $old_value = array_merge($old_value, $value);

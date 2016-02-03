@@ -5,21 +5,22 @@
  * @author     Andreas Fieger <fiedsch@ja-eh.at>
  * @copyright  2016 Andreas Fieger
  * @license    MIT
- * @version    0.0.1
  * @link       https://github.com/fiedsch/datamanagement
  */
 
 namespace Fiedsch\Data\Utility;
 
 
-class UniquenessChecker {
+class UniquenessChecker
+{
 
     const NO_KEY = "_no_key_";
 
     protected $data;
 
-    public function __construct() {
-        $this->data = [ ];
+    public function __construct()
+    {
+        $this->data = [];
     }
 
     /**
@@ -35,14 +36,15 @@ class UniquenessChecker {
      *   (string instead of boolean as the result will be written
      *   to as new data file and false would result in '').
      */
-    public function isNew($value, $category = self::NO_KEY, $strict = false) {
+    public function isNew($value, $category = self::NO_KEY, $strict = false)
+    {
 
         $result = '1';
 
         $value = $strict ? $value : strtolower($value);
 
         if (!isset($this->data[$category]) || !is_array($this->data[$category])) {
-            $this->data[$category] = [ ];
+            $this->data[$category] = [];
         }
 
         if (array_key_exists($value, $this->data[$category])) {
@@ -64,10 +66,11 @@ class UniquenessChecker {
      *
      * @return array the duplicates found while calling isNew()
      */
-    public function getDuplicates() {
-        $result = [ ];
+    public function getDuplicates()
+    {
+        $result = [];
         foreach ($this->data as $key => $data) {
-            $result[$key] = array_filter($data, function($v, $k) {
+            $result[$key] = array_filter($data, function ($v, $k) {
                 return $v > 1;
             }, ARRAY_FILTER_USE_BOTH);
 

@@ -4,7 +4,6 @@
  * @author     Andreas Fieger <fiedsch@ja-eh.at>
  * @copyright  2016 Andreas Fieger
  * @license    MIT
- * @version    0.0.1
  * @link       https://github.com/fiedsch/datamanagement
  */
 
@@ -22,7 +21,8 @@ use Fiedsch\Data\File\CsvReader;
  */
 
 
-class TokenCreator {
+class TokenCreator
+{
 
     const LOWER = 1;
     const UPPER = 2;
@@ -38,7 +38,8 @@ class TokenCreator {
 
     protected $readFromFile;
 
-    public function __construct($length = self::DEFAULT_LENGTH, $case = self::UPPER) {
+    public function __construct($length = self::DEFAULT_LENGTH, $case = self::UPPER)
+    {
         if (!is_int($length) || $length < 1) {
             throw new \RuntimeException("token length must be an integer");
         }
@@ -48,7 +49,7 @@ class TokenCreator {
         }
         $this->length = $length;
         $this->case = $case;
-        $this->generated = [ ];
+        $this->generated = [];
         $this->readFromFile = null;
     }
 
@@ -58,7 +59,8 @@ class TokenCreator {
      *
      * @return string the newly created unique token
      */
-    public function getUniqueToken() {
+    public function getUniqueToken()
+    {
         $tries = 0;
         $candidate = $this->cretateToken();
         // give up and throw an exception if it seems impossible to create a unique token
@@ -79,7 +81,8 @@ class TokenCreator {
      *
      * @return string a randomly generated token
      */
-    protected function cretateToken() {
+    protected function cretateToken()
+    {
 
         // if we have read tokens from file, use them
         if (null !== $this->readFromFile) {
@@ -113,12 +116,12 @@ class TokenCreator {
             'o' => 'b', // 'o' might be confused with '0' (zero)
             '0' => '4', // see 'o'
             'e' => 'c', // if we use the results in Excel and the like, they might try
-                        // to convert '123e4' to a number :-(
+            // to convert '123e4' to a number :-(
         );
 
         $token = '';
         while (strlen($token) < $this->length) {
-                $token .= sha1(rand());
+            $token .= sha1(rand());
         }
 
         // replace characters that might be confusing
@@ -131,7 +134,9 @@ class TokenCreator {
 
         // we don't want purely numeric tokens
 
-        if (is_numeric($token)) { $token = 'x' . substr($token, 1); }
+        if (is_numeric($token)) {
+            $token = 'x' . substr($token, 1);
+        }
 
         // convert to case
 
@@ -145,8 +150,8 @@ class TokenCreator {
             case self::MIXED:
                 // Leave as is would be all lowercase. So transform ~ 50% of the
                 // letters to uppercase
-                $token = join('', array_map(function($letter) {
-                    if (ctype_alpha($letter) && rand(0,1) > 0.5) {
+                $token = join('', array_map(function ($letter) {
+                    if (ctype_alpha($letter) && rand(0, 1) > 0.5) {
                         return strtoupper($letter);
                     }
                     return $letter;
@@ -162,9 +167,10 @@ class TokenCreator {
      *
      * @param string $delimiter as expected by Fiedsch\Data\File\CsvReader
      */
-    public function readFromFile($filepath, $delimiter = "\t") {
+    public function readFromFile($filepath, $delimiter = "\t")
+    {
         $reader = new CsvReader($filepath, $delimiter);
-        $result = [ ];
+        $result = [];
         while (($line = $reader->getLine()) !== null) {
             if (!$reader->isEmpty($line)) {
                 $result[] = $line[0]; // we expect the token in the first column

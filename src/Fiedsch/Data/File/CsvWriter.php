@@ -112,15 +112,5 @@ class CsvWriter extends Writer
         }
         fputcsv($this->handle, $data, $this->delimiter, $this->enclosure, $this->escape);
     }
-
-    /**
-     * Read the first line of the file and use it as header (column names).
-     *
-     * @throws Exception if the current line is > 0, i.e. data was already read.
-     */
-    public function printHeader()
-    {
-        throw new \RuntimeException("not yet implemented.");
-    }
-
+    
 }

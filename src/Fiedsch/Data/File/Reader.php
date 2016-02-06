@@ -11,7 +11,7 @@
 namespace Fiedsch\Data\File;
 
 /**
- * Class FileReader
+ * Class Reader
  * @package Fiedsch\Data
  *
  * Read text files line by line.
@@ -25,15 +25,10 @@ namespace Fiedsch\Data\File;
  * If this is not the case: convert input data first! iconv will be your friend.
  */
 
-class Reader
+class Reader extends File
 {
 
     const STRICT_EMPTY = true;
-
-    /**
-     * @var string the absolute path of the file we are working on
-     */
-    protected $filepath;
 
     /**
      * @var int the most recently read line of the file.
@@ -46,34 +41,7 @@ class Reader
      */
     public function __construct($filepath)
     {
-
-        $realpath = $filepath;
-
-        // is $filepath a relative path? We are considering unix like systems only
-        // and ignore things like "C:\".
-        if (substr($filepath, 0, 1) !== DIRECTORY_SEPARATOR) {
-            $realpath = realpath(null) . DIRECTORY_SEPARATOR . $filepath;
-        }
-
-        if (!$realpath) {
-            throw new \RuntimeException("file '$filepath' does not exist. checked '$realpath'.");
-        }
-
-        if (!file_exists($realpath)) {
-            throw new \RuntimeException("file '$filepath' does not exist. checked '$realpath'.");
-        }
-
-        if (is_dir($realpath)) {
-            throw new \RuntimeException("'$realpath' is a directory.");
-        }
-
-        $this->filepath = $realpath;
-
-        $this->handle = fopen($this->filepath, "r");
-
-        if (!$this->handle) {
-            throw new\RuntimeException("invalid file handle.");
-        }
+        parent::__construct($filepath, 'r');
 
         $this->lineNumber = 0;
 
@@ -84,17 +52,7 @@ class Reader
      */
     public function __destruct()
     {
-        $this->close();
-    }
-
-    /**
-     * Access the file path.
-     *
-     * @return string return the absolute path for the file.
-     */
-    public function getFilePath()
-    {
-        return $this->filepath;
+        parent::__destruct();
     }
 
     /**
@@ -124,16 +82,6 @@ class Reader
     public function getLineNumber()
     {
         return $this->lineNumber;
-    }
-
-    /**
-     * Close the file.
-     */
-    public function close()
-    {
-        if ($this->handle && get_resource_type($this->handle) === 'file') {
-            fclose($this->handle);
-        }
     }
 
     /**

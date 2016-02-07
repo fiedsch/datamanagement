@@ -49,6 +49,7 @@ try {
 use Fiedsch\Data\File\CsvReader;
 use Fiedsch\Data\Augmentation\Augmentor;
 use Fiedsch\Data\Augmentation\Provider\TokenServiceProvider;
+use Fiedsch\Data\File\CsvWriter;
   
 try {
 
@@ -62,16 +63,24 @@ try {
    });
   
    $reader = new CsvReader("testdata.csv", ";");
-   $out = fopen('php://output', 'w');
- 
+   
+   $writer = new CsvWriter("testdata.augmented.txt", "\t");
+   
+   $header_written = false;
+   
    while (($line = $reader->getLine()) !== null) {
      if (!$reader->isEmpty($line)) {
        $result = $augmentor->augment($line);
-       fputcsv($out, array_merge($result['augmented'], $result['data']));
+       if (!$header_written) {
+          $writer->printLine(array_merge(['input_line'], array_keys($result['augmented']), $reader->getHeader()));
+          $header_written = true;
+       }
+       $writer->printLine(array_merge([$reader->getLineNumber()], $result['augmented'], $result['data']));
      }
    }
-   fclose($out);
-   $reader->close();
+   
+   // $reader->close(); // not needed as it will be automatically called when there are no more lines
+   $writer->close();
  
  } catch (Exception $e) {
      print $e->getMessage() . "\n";

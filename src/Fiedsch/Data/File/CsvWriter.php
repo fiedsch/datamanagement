@@ -112,5 +112,5 @@ class CsvWriter extends Writer
         }
         fputcsv($this->handle, $data, $this->delimiter, $this->enclosure, $this->escape);
     }
-    
+
 }

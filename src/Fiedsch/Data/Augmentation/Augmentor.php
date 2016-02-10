@@ -65,10 +65,12 @@ class Augmentor extends Container
             $this[self::KEY_AUGMENTED] = array_merge($this[self::KEY_AUGMENTED], $augmentation_step);
         }
         $this->checkAugmented();
-        return array(
-            self::KEY_DATA => $data,
-            self::KEY_AUGMENTED => $this[self::KEY_AUGMENTED],
-        );
+        // there is no point in returning the passed in $data
+        //return array(
+        //    self::KEY_DATA => $data,
+        //    self::KEY_AUGMENTED => $this[self::KEY_AUGMENTED],
+        //);
+        return $this[self::KEY_AUGMENTED];
     }
 
     /**

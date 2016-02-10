@@ -44,7 +44,7 @@ try {
 ```php
 <?php
  
- require __DIR__ . '/../vendor/autoload.php';
+require __DIR__ . '/../vendor/autoload.php';
  
 use Fiedsch\Data\File\CsvReader;
 use Fiedsch\Data\Augmentation\Augmentor;
@@ -68,14 +68,16 @@ try {
    
    $header_written = false;
    
+   $reader->readHeader();
+   
    while (($line = $reader->getLine()) !== null) {
      if (!$reader->isEmpty($line)) {
        $result = $augmentor->augment($line);
        if (!$header_written) {
-          $writer->printLine(array_merge(['input_line'], array_keys($result['augmented']), $reader->getHeader()));
+          $writer->printLine(array_merge(['input_line'], array_keys($result), $reader->getHeader()));
           $header_written = true;
        }
-       $writer->printLine(array_merge([$reader->getLineNumber()], $result['augmented'], $result['data']));
+       $writer->printLine(array_merge([$reader->getLineNumber()], $result, $line));
      }
    }
    

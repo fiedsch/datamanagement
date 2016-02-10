@@ -17,6 +17,9 @@ namespace Fiedsch\Data\File;
  *
  * Files are assumed to be encoded utf-8 with LF line endings.
  * @see FileReader for more information.
+ *
+ * If you need a more sophisticated CSV-reader, maybe
+ * https://github.com/parsecsv/parsecsv-for-php can help you.
  */
 
 class CsvReader extends Reader

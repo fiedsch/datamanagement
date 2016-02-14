@@ -12,16 +12,15 @@ class QuotaCellTest extends PHPUnit_Framework_TestCase
     {
         $targets = ['x'=>10, 'y'=>20, 'z'=>30];
         $cell = new QuotaCell($targets);
-        $this->assertEquals(count($targets), count($cell->getCounts()));
+        $expectedinitialcounts = ['x'=>0, 'y'=>0, 'z'=>0];
+        $this->assertEquals($expectedinitialcounts, $cell->getCounts());
 
         $cell->add(5,'x');
         $this->assertEquals(5, $cell->getCount('x'));
         $this->assertFalse($cell->isFull('x'));
 
-
-        $this->assertFalse($cell->add(50,'x'));
+        $this->assertFalse($cell->add(50, 'x'));
         $this->assertEquals(5, $cell->getCount('x'));
-
     }
 
     /**
@@ -31,7 +30,7 @@ class QuotaCellTest extends PHPUnit_Framework_TestCase
     {
         $targets = ['x'=>10, 'y'=>20, 'z'=>30];
         $cell = new QuotaCell($targets);
-        $cell->add(5,'a'); // index a is not defined in $targets!
+        $cell->add(5, 'a'); // index a is not defined in $targets!
     }
 
     /**

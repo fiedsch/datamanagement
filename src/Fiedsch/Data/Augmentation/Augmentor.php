@@ -61,6 +61,9 @@ class Augmentor extends Container
         // apply rules
         foreach ($rulekeys as $rulename) {
             $augmentation_step = $this[$rulename]($this, $data);
+            if (!is_array($augmentation_step)) {
+                throw new \RuntimeException("augmentaion rule '$rulename' did not produce data. Make sure to return the array of augmented data.");
+            }
             // make the augmented data so far available to the next rule
             $this[self::KEY_AUGMENTED] = array_merge($this[self::KEY_AUGMENTED], $augmentation_step);
         }

@@ -58,8 +58,7 @@ try {
   $augmentor->register(new TokenServiceProvider());
   
   $augmentor->addRule('token', function (Augmentor $augmentor, $data) {
-     $augmented['token'] = $augmentor['token']->getUniqueToken();
-     return $augmented;
+     return [ 'token' => $augmentor['token']->getUniqueToken() ];
    });
   
    $reader = new CsvReader("testdata.csv", ";");

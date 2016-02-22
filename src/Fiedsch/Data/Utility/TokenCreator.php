@@ -23,34 +23,70 @@ use Fiedsch\Data\File\CsvReader;
 
 class TokenCreator
 {
-
     const LOWER = 1;
     const UPPER = 2;
     const MIXED = 3;
 
     const DEFAULT_LENGTH = 12;
 
+    /**
+     * @var int
+     */
     protected $length;
 
+    /**
+     * @var int
+     */
     protected $case;
 
+    /**
+     * @var array
+     */
     protected $generated;
 
-    protected $readFromFile;
+    /**
+     * @var array
+     */
+    protected $tokensReadFromFile;
 
+    /**
+     * @var array
+     */
+    protected $tokenChars;
+
+    /**
+     * @param int $length
+     * @param int $case
+     *
+     * @throws \LogicException
+     */
     public function __construct($length = self::DEFAULT_LENGTH, $case = self::UPPER)
     {
         if (!is_int($length) || $length < 1) {
-            throw new \RuntimeException("token length must be an integer");
+            throw new \LogicException("token length must be a positive integer");
         }
         if (!in_array($case, [self::LOWER, self::UPPER, self::MIXED])) {
-            throw new \RuntimeException(sprintf("token case must be one of %s=LOWER, %s=UPPER or %s=MIXED",
+            throw new \LogicException(sprintf("token case must be one of %s=LOWER, %s=UPPER or %s=MIXED",
                 self::LOWER, self::UPPER, self::MIXED));
         }
         $this->length = $length;
         $this->case = $case;
         $this->generated = [];
-        $this->readFromFile = null;
+        $this->tokensReadFromFile = null;
+        $this->initializeTokenCharacters();
+    }
+
+    /**
+     * Initialize the list of characters that are used to create tokens
+     */
+    protected function initializeTokenCharacters()
+    {
+        $allowed  = 'abcdefghijklmnopqrstuvwxyz';
+        $allowed .= strtoupper($allowed);
+        $allowed .= '0123456789';
+        //$allowed .= '!§$%&?';
+        $this->tokenChars = str_split($allowed);
+        shuffle($this->tokenChars);
     }
 
     /**
@@ -58,6 +94,8 @@ class TokenCreator
      * this token before).
      *
      * @return string the newly created unique token
+     *
+     * @throws \RuntimeException
      */
     public function getUniqueToken()
     {
@@ -78,18 +116,23 @@ class TokenCreator
 
     /**
      * Generate a random token according to the rules (length and case)
+     * or return the next token read from a file. Tokens read from file will
+     * will be left as they are (e.g. will not be shortened if they are longer
+     * than the specified length). Still length and case are checked and will
+     * throw exceptions if the rules are not satisfied.
      *
      * @return string a randomly generated token
+     *
+     * @throws \LogicException
      */
     protected function cretateToken()
     {
-
-        // if we have read tokens from file, use them
-        if (null !== $this->readFromFile) {
-            if (count($this->readFromFile) == 0) {
+        // if we have read tokens from file: use them
+        if (null !== $this->tokensReadFromFile) {
+            if (count($this->tokensReadFromFile) == 0) {
                 throw new \LogicException("you requested more tokens than were read from file");
             }
-            $token = array_shift($this->readFromFile);
+            $token = array_shift($this->tokensReadFromFile);
             // check requirements
             if (strlen($token) < $this->length) {
                 throw new \LogicException(
@@ -98,10 +141,10 @@ class TokenCreator
                     ));
             }
             if ($this->case == self::LOWER && preg_match("/[A-Z]/", $token)) {
-                throw new \LogicException("you requestet LOWERcase tokens but the file contsins uppercase letters");
+                throw new \LogicException("you requestet lowercase tokens but the token contains uppercase letters");
             }
             if ($this->case == self::UPPER && preg_match("/[a-z]/", $token)) {
-                throw new \LogicException("you requestet UPPERcase tokens but the file contsins lowercase letters");
+                throw new \LogicException("you requestet uppercase tokens but the token contains lowercase letters");
             }
             return $token;
         }
@@ -110,18 +153,19 @@ class TokenCreator
         // if someone has to type the token
 
         $bad_characters = array(
-            'i' => '2', // 'i'  (esp. 'I') might be confused with '1' (one) or 'l' (lowercase L)
-            'l' => 'a', // see 'i'
-            '1' => '3', // see 'i'
-            'o' => 'b', // 'o' might be confused with '0' (zero)
-            '0' => '4', // see 'o'
-            'e' => 'c', // if we use the results in Excel and the like, they might try
-            // to convert '123e4' to a number :-(
+            'i' => 'a', // 'i'  (esp. 'I') might be confused with '1' (one) or 'l' (lowercase L)
+            'I' => 'b', // see 'i'
+            'l' => 'c', // see 'i'
+            '1' => 'd', // see 'i'
+            'o' => 'f', // 'o' might be confused with '0' (zero)
+            '0' => 'g', // '0' (zero), see 'o'
+            'e' => 'h', // if we use the results in Excel and the like, they might try
+                        // to convert '123e4' to a number :-(
         );
 
         $token = '';
         while (strlen($token) < $this->length) {
-            $token .= sha1(rand());
+            $token .= $this->getTokenCharacter();
         }
 
         // replace characters that might be confusing
@@ -148,17 +192,28 @@ class TokenCreator
                 $token = strtoupper($token);
                 break;
             case self::MIXED:
-                // Leave as is would be all lowercase. So transform ~ 50% of the
+                // Leave as is might be all lowercase. So transform ~ 50% of the
                 // letters to uppercase
                 $token = join('', array_map(function ($letter) {
-                    if (ctype_alpha($letter) && rand(0, 1) > 0.5) {
-                        return strtoupper($letter);
+                    if (ctype_alpha($letter)) {
+                        return rand(0, 1) > 0.5 ? strtoupper($letter) : strtolower($letter);
                     }
                     return $letter;
                 }, str_split($token)));
         }
 
         return $token;
+    }
+
+    /**
+     * Get a random character
+     *
+     * @return string
+     */
+    protected function getTokenCharacter()
+    {
+        $index = rand(0, count($this->tokenChars)-1);
+        return $this->tokenChars[$index];
     }
 
     /**
@@ -170,15 +225,13 @@ class TokenCreator
     public function readFromFile($filepath, $delimiter = "\t")
     {
         $reader = new CsvReader($filepath, $delimiter);
-        $result = [];
+        $this->tokensReadFromFile = [];
         while (($line = $reader->getLine()) !== null) {
             if (!$reader->isEmpty($line)) {
-                $result[] = $line[0]; // we expect the token in the first column
+                $this->tokensReadFromFile[] = $line[0]; // we expect the token in the first column
                 // the second column might contain further info such as "use this many times"
             }
         }
-
-        $this->readFromFile = $result;
     }
 
 }

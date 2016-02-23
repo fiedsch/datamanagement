@@ -163,10 +163,9 @@ class TokenCreator
                         // to convert '123e4' to a number :-(
         );
 
-        $token = '';
-        while (strlen($token) < $this->length) {
-            $token .= $this->getTokenCharacter();
-        }
+        // create a new token
+
+        $token = $this->getTokenCharacters($this->length);
 
         // replace characters that might be confusing
 
@@ -208,12 +207,17 @@ class TokenCreator
     /**
      * Get a random character
      *
+     * @param int $count number of characters to return
+     *
      * @return string
      */
-    protected function getTokenCharacter()
+    protected function getTokenCharacters($count = 1)
     {
-        $index = rand(0, count($this->tokenChars)-1);
-        return $this->tokenChars[$index];
+        $result = '';
+        for ($i=0; $i< $count; $i++) {
+            $result .= $this->tokenChars[mt_rand(0, count($this->tokenChars) - 1)];
+        }
+        return $result;
     }
 
     /**

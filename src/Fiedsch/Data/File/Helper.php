@@ -15,6 +15,8 @@ namespace Fiedsch\Data\File;
  * @package Fiedsch\Data
  *
  * A variety of helper functions that might be useful when working with data files.
+ *
+ * TODO: should we rename SC() and getBySC() to Sc() and getBySc()?
  */
 
 class Helper

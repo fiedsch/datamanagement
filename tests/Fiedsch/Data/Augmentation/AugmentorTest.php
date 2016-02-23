@@ -11,7 +11,7 @@ class AugmentorTest extends PHPUnit_Framework_TestCase
      */
     public function testAugmentation()
     {
-        $a = new Augmentor();
+        $augmentor = new Augmentor();
 
         $data = [
             ['foo' => 'foo1'],
@@ -19,25 +19,24 @@ class AugmentorTest extends PHPUnit_Framework_TestCase
             ['foo' => 'foo3']
         ];
 
-        $a->addRule("rule1", function ($a, $data) {
+        $augmentor->addRule("rule1", function (Augmentor $augmentor, array $data) {
             return ['bar' => strtoupper($data['foo'])];
         });
-        $a->addRule("rule2", function ($a, $data) {
-            $prev = $a->getAugmentedSoFar();
-            $this->assertEquals($prev, ['bar' => strtoupper($data['foo'])]);
-            return ['baz' => strtolower($prev['bar'])];
+        $augmentor->addRule("rule2", function (Augmentor $augmentor, array $data) {
+            $previousStep = $augmentor->getAugmentedSoFar();
+            return ['baz' => strtolower($previousStep['bar'])];
         });
 
-        $result = $a->augment($data[0]);
+        $result = $augmentor->augment($data[0]);
         $this->assertEquals($result, ['bar' => 'FOO1', 'baz' => 'foo1']);
-        $this->assertEquals($a->getAugmentedSoFar(), ['bar' => 'FOO1', 'baz' => 'foo1']);
+        $this->assertEquals($augmentor->getAugmentedSoFar(), ['bar' => 'FOO1', 'baz' => 'foo1']);
 
-        $result = $a->augment($data[1]);
+        $result = $augmentor->augment($data[1]);
         $this->assertEquals($result, ['bar' => 'FOO2', 'baz' => 'foo2']);
-        $this->assertEquals($a->getAugmentedSoFar(), ['bar' => 'FOO2', 'baz' => 'foo2']);
+        $this->assertEquals($augmentor->getAugmentedSoFar(), ['bar' => 'FOO2', 'baz' => 'foo2']);
 
-        $result = $a->augment($data[2]);
-        $this->assertEquals($a->getAugmentedSoFar(), ['bar' => 'FOO3', 'baz' => 'foo3']);
+        $result = $augmentor->augment($data[2]);
+        $this->assertEquals($augmentor->getAugmentedSoFar(), ['bar' => 'FOO3', 'baz' => 'foo3']);
 
     }
 

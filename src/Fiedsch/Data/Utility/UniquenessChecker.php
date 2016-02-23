@@ -34,7 +34,7 @@ class UniquenessChecker
      *
      * @return string '0' or '1' indicating false or true respectively.
      *   (string instead of boolean as the result will be written
-     *   to as new data file and false would result in '').
+     *   to a new data file and false would result in '').
      */
     public function isNew($value, $category = self::NO_KEY, $strict = false)
     {

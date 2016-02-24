@@ -81,7 +81,7 @@ class TokenCreator
      */
     protected function initializeTokenCharacters()
     {
-        $allowed  = 'abcdefghijklmnopqrstuvwxyz';
+        $allowed = 'abcdefghijklmnopqrstuvwxyz';
         $allowed .= strtoupper($allowed);
         $allowed .= '0123456789';
         //$allowed .= '!§$%&?';
@@ -152,7 +152,7 @@ class TokenCreator
         // characters we want to omit in generated tokens as they can be confused
         // if someone has to type the token
 
-        $bad_characters = array(
+        $bad_characters = [
             'i' => 'a', // 'i'  (esp. 'I') might be confused with '1' (one) or 'l' (lowercase L)
             'I' => 'b', // see 'i'
             'l' => 'c', // see 'i'
@@ -160,8 +160,8 @@ class TokenCreator
             'o' => 'f', // 'o' might be confused with '0' (zero)
             '0' => 'g', // '0' (zero), see 'o'
             'e' => 'h', // if we use the results in Excel and the like, they might try
-                        // to convert '123e4' to a number :-(
-        );
+            // to convert '123e4' to a number :-(
+        ];
 
         // create a new token
 
@@ -214,7 +214,7 @@ class TokenCreator
     protected function getTokenCharacters($count = 1)
     {
         $result = '';
-        for ($i=0; $i< $count; $i++) {
+        for ($i = 0; $i < $count; $i++) {
             $result .= $this->tokenChars[mt_rand(0, count($this->tokenChars) - 1)];
         }
         return $result;

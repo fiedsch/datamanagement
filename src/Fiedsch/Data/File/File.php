@@ -65,7 +65,7 @@ class File
 
         $this->filepath = $realpath;
 
-        if (!in_array($mode, ['r','w','a','x','c'])) {
+        if (!in_array($mode, ['r', 'w', 'a', 'x', 'c'])) {
             throw new \RuntimeException("invalid mode '$mode' for file.");
         }
 
@@ -86,16 +86,6 @@ class File
     }
 
     /**
-     * Access the file path.
-     *
-     * @return string return the absolute path for the file.
-     */
-    public function getFilePath()
-    {
-        return $this->filepath;
-    }
-
-    /**
      * Close the file.
      */
     public function close()
@@ -103,6 +93,16 @@ class File
         if ($this->handle && get_resource_type($this->handle) === 'file') {
             fclose($this->handle);
         }
+    }
+
+    /**
+     * Access the file path.
+     *
+     * @return string return the absolute path for the file.
+     */
+    public function getFilePath()
+    {
+        return $this->filepath;
     }
 
 }

@@ -14,11 +14,11 @@ class TokenRule implements AugmentationRule
 {
     /**
      * @param Augmentor $augmentor
-     * 
+     *
      * @return array
      */
     public function __invoke(Augmentor $augmentor)
     {
-        return [ 'token' => $augmentor['token']->getUniqueToken() ];
+        return ['token' => $augmentor['token']->getUniqueToken()];
     }
 }

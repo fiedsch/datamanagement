@@ -10,12 +10,12 @@ class QuotaCellTest extends PHPUnit_Framework_TestCase
      */
     public function testMultidimensionalCell()
     {
-        $targets = ['x'=>10, 'y'=>20, 'z'=>30];
+        $targets = ['x' => 10, 'y' => 20, 'z' => 30];
         $cell = new QuotaCell($targets);
-        $expectedinitialcounts = ['x'=>0, 'y'=>0, 'z'=>0];
+        $expectedinitialcounts = ['x' => 0, 'y' => 0, 'z' => 0];
         $this->assertEquals($expectedinitialcounts, $cell->getCounts());
 
-        $cell->add(5,'x');
+        $cell->add(5, 'x');
         $this->assertEquals(5, $cell->getCount('x'));
         $this->assertFalse($cell->isFull('x'));
 
@@ -28,7 +28,7 @@ class QuotaCellTest extends PHPUnit_Framework_TestCase
      */
     public function testUndefinedOffset()
     {
-        $targets = ['x'=>10, 'y'=>20, 'z'=>30];
+        $targets = ['x' => 10, 'y' => 20, 'z' => 30];
         $cell = new QuotaCell($targets);
         $cell->add(5, 'a'); // index a is not defined
     }

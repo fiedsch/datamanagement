@@ -9,14 +9,15 @@ class HelperTest extends PHPUnit_Framework_TestCase
     {
 
     }
+
     public function testGetBySC()
     {
         $data = str_split("abcdefghijklmnopqrstuvwxyz");
-        foreach($data as $letter) {
+        foreach ($data as $letter) {
             $data[] = "a$letter";
         }
 
-        foreach($data as $letter) {
+        foreach ($data as $letter) {
             $this->assertEquals($letter, Helper::getBySC($data, $letter));
         }
 

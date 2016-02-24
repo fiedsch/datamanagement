@@ -59,7 +59,7 @@ class Writer extends File
         if (!$this->handle) {
             throw new \RuntimeException('can not write to file: invalid file handle');
         }
-        fwrite($this->handle, $line."\n");
+        fwrite($this->handle, $line . "\n");
     }
 
 }

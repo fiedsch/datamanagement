@@ -34,8 +34,10 @@ class QuotaCell
      */
     public function __construct($target)
     {
-        $this->targets = is_array($target) ? $target : [ $target ];
-        $this->counts  = array_map(function() { return 0; }, $this->targets);
+        $this->targets = is_array($target) ? $target : [$target];
+        $this->counts = array_map(function () {
+            return 0;
+        }, $this->targets);
 
     }
 
@@ -57,6 +59,23 @@ class QuotaCell
             return true;
         }
         return false;
+    }
+
+    /**
+     * Could we add $amount without exceeding the quota?
+     *
+     * @param mixed $key
+     * @param int $amount
+     *
+     * @return boolean
+     * @throws \RuntimeException
+     */
+    public function canAdd($amount, $key = 0)
+    {
+        if (!isset($this->targets[$key])) {
+            throw new \RuntimeException("undefined key '$key'");
+        }
+        return $this->counts[$key] + $amount <= $this->targets[$key];
     }
 
     /**
@@ -97,23 +116,6 @@ class QuotaCell
             throw new \RuntimeException("undefined key '$key'");
         }
         return $this->counts[$key] >= $this->targets[$key];
-    }
-
-    /**
-     * Could we add $amount without exceeding the quota?
-     *
-     * @param mixed $key
-     * @param int $amount
-     *
-     * @return boolean
-     * @throws \RuntimeException
-     */
-    public function canAdd($amount, $key = 0)
-    {
-        if (!isset($this->targets[$key])) {
-            throw new \RuntimeException("undefined key '$key'");
-        }
-        return $this->counts[$key] + $amount <= $this->targets[$key];
     }
 
 }

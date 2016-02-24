@@ -23,28 +23,6 @@ class Helper
 {
 
     /**
-     * Get the zero based index corresponding to the spreadsheet column (A, B, ..., Z, AA, AB, ...).
-     *
-     * @param string $name Name of the column, case insensitive.
-     *
-     * @return int|number zero based index that corresponds to the `$name`
-     */
-    public static function SC($name)
-    {
-        // name consists of a single letter
-        if (!preg_match("/^[A-Z]+$/i", $name)) {
-            throw new \RuntimeException("invalid column name '$name'");
-        }
-
-        // solve longer names recursively
-        if (preg_match("/^([A-Z])([A-Z]+)$/i", $name, $matches)) {
-            return pow(26, strlen($matches[2])) * (self::SC($matches[1]) + 1) + self::SC($matches[2]);
-        }
-
-        return ord(strtoupper($name)) - 64 - 1;
-    }
-
-    /**
      * Access an array value at a specific index position specified by its name (cf. Helper::SC()).
      * See also Helper::getByIndex().
      *
@@ -88,6 +66,28 @@ class Helper
         }
 
         return $trim ? trim($data[$index]) : $data[$index];
+    }
+
+    /**
+     * Get the zero based index corresponding to the spreadsheet column (A, B, ..., Z, AA, AB, ...).
+     *
+     * @param string $name Name of the column, case insensitive.
+     *
+     * @return int|number zero based index that corresponds to the `$name`
+     */
+    public static function SC($name)
+    {
+        // name consists of a single letter
+        if (!preg_match("/^[A-Z]+$/i", $name)) {
+            throw new \RuntimeException("invalid column name '$name'");
+        }
+
+        // solve longer names recursively
+        if (preg_match("/^([A-Z])([A-Z]+)$/i", $name, $matches)) {
+            return pow(26, strlen($matches[2])) * (self::SC($matches[1]) + 1) + self::SC($matches[2]);
+        }
+
+        return ord(strtoupper($name)) - 64 - 1;
     }
 
 }

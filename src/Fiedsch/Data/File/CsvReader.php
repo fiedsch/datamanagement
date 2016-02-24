@@ -101,20 +101,6 @@ class CsvReader extends Reader
     }
 
     /**
-     * Read and return the next line from the file.
-     *
-     * @return array|null the data from next line of the file or null if there are no more lines.
-     */
-    public function getLine()
-    {
-        $line = parent::getLine();
-        if ($line !== null) {
-            return str_getcsv($line, $this->delimiter, $this->enclosure, $this->escape);
-        }
-        return null;
-    }
-
-    /**
      * Read the first line of the file and use it as header (column names).
      *
      * @throws \Exception if the current line is > 0, i.e. data was already read.
@@ -126,6 +112,20 @@ class CsvReader extends Reader
         }
 
         $this->header = $this->getLine();
+    }
+
+    /**
+     * Read and return the next line from the file.
+     *
+     * @return array|null the data from next line of the file or null if there are no more lines.
+     */
+    public function getLine()
+    {
+        $line = parent::getLine();
+        if ($line !== null) {
+            return str_getcsv($line, $this->delimiter, $this->enclosure, $this->escape);
+        }
+        return null;
     }
 
     /**

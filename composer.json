@@ -2,7 +2,13 @@
   "name": "fiedsch/datamanagement",
   "type": "library",
   "description": "a library with helpers for managing data that is read from text files",
-  "keywords": ["data", "text files", "csv", "tab delimited", "helpers"],
+  "keywords": [
+    "data",
+    "text files",
+    "csv",
+    "tab delimited",
+    "helpers"
+  ],
   "license": "MIT",
   "authors": [
     {
@@ -11,14 +17,14 @@
     }
   ],
   "support": {
-    "issues":"https://github.com/fiedsch/datamanagement/issues",
-    "source":"https://github.com/fiedsch/datamanagement"
+    "issues": "https://github.com/fiedsch/datamanagement/issues",
+    "source": "https://github.com/fiedsch/datamanagement"
   },
   "require": {
     "php": ">=5.6",
     "pimple/pimple": "~3.0"
   },
   "autoload": {
-    "psr-4": { "": "src/" }
+    "psr-4": {"": "src/"}
   }
 }

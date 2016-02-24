@@ -37,7 +37,7 @@ class Augmentor extends Container
      *
      * @param array $values
      */
-    public function __construct($values = array())
+    public function __construct($values = [])
     {
         parent::__construct($values);
     }
@@ -53,7 +53,7 @@ class Augmentor extends Container
     public function augment($data)
     {
         // initialize
-        $this[self::KEY_AUGMENTED] = array();
+        $this[self::KEY_AUGMENTED] = [];
         // get rules
         $rulekeys = array_filter($this->keys(), function ($key) {
             return strpos($key, self::PREFIX_RULE) === 0;
@@ -77,15 +77,6 @@ class Augmentor extends Container
     }
 
     /**
-     * @param array $colnames the names of the columns that have to be set during the
-     *   augmentation steps.
-     */
-    public function setRequiredColumns(array $colnames)
-    {
-        $this[self::KEY_COLNAMES] = $colnames;
-    }
-
-    /**
      * Check if all of the required columns (fields) have been set during the augmentaion steps.
      * Throw an exception if a column is missing.
      */
@@ -101,6 +92,15 @@ class Augmentor extends Container
     }
 
     /**
+     * @param array $colnames the names of the columns that have to be set during the
+     *   augmentation steps.
+     */
+    public function setRequiredColumns(array $colnames)
+    {
+        $this[self::KEY_COLNAMES] = $colnames;
+    }
+
+    /**
      * Access the data that has been augmented so far in the previous augmentation steps.
      *
      * @return array the augmented data so far (or an empty array, should this be called in the
@@ -109,9 +109,20 @@ class Augmentor extends Container
     public function getAugmentedSoFar()
     {
         if (!$this->offsetExists(self::KEY_AUGMENTED)) {
-            $this[self::KEY_AUGMENTED] = array();
+            $this[self::KEY_AUGMENTED] = [];
         }
         return $this[self::KEY_AUGMENTED];
+    }
+
+    /**
+     * Add an augmentation rule.
+     *
+     * @param string $name the name of the augmentation rule
+     * @param callable $rule the code that will be executed
+     */
+    public function addRule($name, $rule)
+    {
+        $this[self::rule($name)] = $this->protect($rule);
     }
 
     /**
@@ -126,18 +137,6 @@ class Augmentor extends Container
     {
         return self::PREFIX_RULE . $name;
     }
-
-    /**
-     * Add an augmentation rule.
-     *
-     * @param string $name the name of the augmentation rule
-     * @param callable $rule the code that will be executed
-     */
-    public function addRule($name, $rule)
-    {
-        $this[self::rule($name)] = $this->protect($rule);
-    }
-
 
     /**
      * Append to an already stored array.

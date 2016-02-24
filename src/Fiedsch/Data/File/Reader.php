@@ -90,6 +90,8 @@ class Reader extends File
      * @param string $line the line to check.
      *
      * @param boolean $strict if $strict is set to true, ' ' is not considered empty.
+     *
+     * @return boolean
      */
     // NOTE to self: this function is not static as child classes such as CsvFileReader
     // need to access class properties as e.g. the delimiter.

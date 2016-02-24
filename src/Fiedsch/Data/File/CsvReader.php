@@ -117,7 +117,7 @@ class CsvReader extends Reader
     /**
      * Read the first line of the file and use it as header (column names).
      *
-     * @throws Exception if the current line is > 0, i.e. data was already read.
+     * @throws \Exception if the current line is > 0, i.e. data was already read.
      */
     public function readHeader()
     {
@@ -144,6 +144,8 @@ class CsvReader extends Reader
      * @param array $line the line to check.
      *
      * @param boolean $strict controls how to compare "empty" strings (see also FileReader::isEmpty()).
+     *
+     * @return boolean
      */
     public function isEmpty($line, $strict = false)
     {

@@ -30,11 +30,11 @@ class QuotaCellTest extends PHPUnit_Framework_TestCase
     {
         $targets = ['x'=>10, 'y'=>20, 'z'=>30];
         $cell = new QuotaCell($targets);
-        $cell->add(5, 'a'); // index a is not defined in $targets!
+        $cell->add(5, 'a'); // index a is not defined
     }
 
     /**
-     * test fallback to univariat target if default arguments are used
+     * test fallback to univariate target if default arguments are used
      */
     public function testScalarCell()
     {

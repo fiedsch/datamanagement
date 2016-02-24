@@ -30,12 +30,12 @@ class QuotaCell
     protected $targets;
 
     /**
-     * @param array  $target
+     * @param array|int $target
      */
     public function __construct($target)
     {
         $this->targets = is_array($target) ? $target : [ $target ];
-        $this->counts  = array_map(function($element) { return 0; }, $this->targets);
+        $this->counts  = array_map(function() { return 0; }, $this->targets);
 
     }
 

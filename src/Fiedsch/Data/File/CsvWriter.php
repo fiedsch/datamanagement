@@ -103,7 +103,7 @@ class CsvWriter extends Writer
     /**
      * Read and return the next line from the file.
      *
-     * @return array|null the data from next line of the file or null if there are no more lines.
+     * @param array $data
      */
     public function printLine($data)
     {

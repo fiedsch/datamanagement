@@ -29,7 +29,7 @@ class ValidationServiceProvider implements ServiceProviderInterface
     public function register(Container $container)
     {
 
-        $container['validation'] = function ($container) {
+        $container['validation'] = function () {
             return new Validator();
         };
 

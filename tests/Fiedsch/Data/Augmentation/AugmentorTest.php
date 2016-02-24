@@ -35,7 +35,7 @@ class AugmentorTest extends PHPUnit_Framework_TestCase
         $this->assertEquals($result, ['bar' => 'FOO2', 'baz' => 'foo2']);
         $this->assertEquals($augmentor->getAugmentedSoFar(), ['bar' => 'FOO2', 'baz' => 'foo2']);
 
-        $result = $augmentor->augment($data[2]);
+        /*$result = */$augmentor->augment($data[2]);
         $this->assertEquals($augmentor->getAugmentedSoFar(), ['bar' => 'FOO3', 'baz' => 'foo3']);
 
     }

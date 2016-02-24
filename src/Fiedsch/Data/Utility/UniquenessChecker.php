@@ -70,7 +70,7 @@ class UniquenessChecker
     {
         $result = [];
         foreach ($this->data as $key => $data) {
-            $result[$key] = array_filter($data, function ($v, $k) {
+            $result[$key] = array_filter($data, function ($v /*, $k*/) {
                 return $v > 1;
             }, ARRAY_FILTER_USE_BOTH);
 

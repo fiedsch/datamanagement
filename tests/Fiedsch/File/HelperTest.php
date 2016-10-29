@@ -7,7 +7,13 @@ class HelperTest extends PHPUnit_Framework_TestCase
 
     public function testSC()
     {
-
+        $data = str_split("abcdefghijklmnopqrstuvwxyz");
+        foreach ($data as $i => $letter) {
+            $this->assertEquals($i, Helper::SC($letter));
+        }
+        $this->assertEquals(Helper::SC('aa'), Helper::SC('z')+1);
+        $this->assertEquals(Helper::SC('az'), Helper::SC('z')+26);
+        $this->assertEquals(Helper::SC('ba'), Helper::SC('az')+1);
     }
 
     public function testGetBySC()

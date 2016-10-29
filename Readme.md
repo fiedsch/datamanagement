@@ -37,6 +37,21 @@ try {
     print $e->getMessage() . "\n";
 }
 ```
+
+#### Features
+
+Aas of v0.3.2 the typical boilerplate "open file, read every non-empty line, close file" 
+can be written in a fancier way. Use the optional parameter to `getLine()`:
+ 
+ ```php
+ <?php
+ 
+   while (($line = $reader->getLine(Reader::SKIP_EMPTY_LINES)) !== null) {
+       print_r($line);
+   }
+   
+ ```
+ 
  
 ### Data augmentation
  

@@ -30,6 +30,9 @@ class Reader extends File
 
     const STRICT_EMPTY = true;
 
+    const RETURN_EVERY_LINE = 1;
+    const SKIP_EMPTY_LINES = 2;
+
     /**
      * @var int the most recently read line of the file.
      */
@@ -58,9 +61,10 @@ class Reader extends File
     /**
      * Read and return the next line from the file.
      *
+     * @param int $mode (SKIP_EMPTY_LINES or RETURN_EVERY_LINE which is the default)
      * @return string|null the next line of the file or null if there are no more lines
      */
-    public function getLine()
+    public function getLine($mode = self::RETURN_EVERY_LINE)
     {
         if ($this->handle) {
             $line = fgets($this->handle);
@@ -69,6 +73,10 @@ class Reader extends File
                 return null;
             }
             ++$this->lineNumber;
+            if ($mode === self::SKIP_EMPTY_LINES && $this->isEmpty($line)) {
+                return $this->getLine($mode);
+            }
+
             return rtrim($line, "\r\n");
         }
         return null;

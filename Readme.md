@@ -40,7 +40,7 @@ try {
 
 #### Features
 
-Aas of v0.3.2 the typical boilerplate "open file, read every non-empty line, close file" 
+As of v0.3.2 the typical boilerplate "open file, read every non-empty line, close file" 
 can be written in a fancier way. Use the optional parameter to `getLine()`:
  
  ```php

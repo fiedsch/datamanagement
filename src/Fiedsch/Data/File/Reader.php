@@ -73,7 +73,7 @@ class Reader extends File
                 return null;
             }
             ++$this->lineNumber;
-            if ($mode === self::SKIP_EMPTY_LINES && $this->isEmpty($line)) {
+            if ($mode === self::SKIP_EMPTY_LINES && self::isEmpty($line)) {
                 return $this->getLine($mode);
             }
 
@@ -101,9 +101,7 @@ class Reader extends File
      *
      * @return boolean
      */
-    // NOTE to self: this function is not static as child classes such as CsvFileReader
-    // need to access class properties as e.g. the delimiter.
-    public function isEmpty($line, $strict = false)
+    public static function isEmpty($line, $strict = false)
     {
         if ($strict) {
             return $line === '';

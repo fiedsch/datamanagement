@@ -117,12 +117,15 @@ class CsvReader extends Reader
     /**
      * Read and return the next line from the file.
      *
+     * @param int $mode (SKIP_EMPTY_LINES or RETURN_EVERY_LINE which is the default)
      * @return array|null the data from next line of the file or null if there are no more lines.
      */
-    public function getLine()
+    public function getLine($mode = self::RETURN_EVERY_LINE)
     {
-        $line = parent::getLine();
+        $line = parent::getLine($mode);
         if ($line !== null) {
+            // we have recursive calls to skip empty lines so $line might already by paresd
+            if (is_array($line)) { return $line; }
             return str_getcsv($line, $this->delimiter, $this->enclosure, $this->escape);
         }
         return null;
@@ -147,7 +150,7 @@ class CsvReader extends Reader
      *
      * @return boolean
      */
-    public function isEmpty($line, $strict = false)
+    public static function isEmpty($line, $strict = false)
     {
         $test = array_filter($line, function ($element) use ($strict) {
             return !Reader::isEmpty($element, $strict);

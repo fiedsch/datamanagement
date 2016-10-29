@@ -69,4 +69,15 @@ class ReaderTest extends PHPUnit_Framework_TestCase
         $this->assertEquals(5, $this->reader->getLineNumber());
     }
 
+    /**
+     * Test accessing a non existant file.
+     * An exception should be thrown.
+     */
+    public function testNonExistant()
+    {
+        $this->expectException(RuntimeException::class);
+        new Reader($this->filepath.'.does_not_exist');
+    }
+
+
 }

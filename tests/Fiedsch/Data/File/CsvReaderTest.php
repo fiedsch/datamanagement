@@ -11,6 +11,12 @@ class CsvReaderTest extends PHPUnit_Framework_TestCase
     protected $filepath = 'tests/assets/data.txt';
 
     /**
+     * @var string
+     */
+    protected $separator = ';';
+
+
+    /**
      * @var CsvReader
      */
     protected $reader;
@@ -20,7 +26,7 @@ class CsvReaderTest extends PHPUnit_Framework_TestCase
      */
     protected function setUp()
     {
-        $this->reader = new CsvReader($this->filepath, ";");
+        $this->reader = new CsvReader($this->filepath, $this->separator);
     }
 
     /**
@@ -67,6 +73,32 @@ class CsvReaderTest extends PHPUnit_Framework_TestCase
         }
         $this->assertEquals(5, $i);
         $this->assertEquals(5, $this->reader->getLineNumber());
+    }
+
+    /**
+     *
+     */
+    public function testDelimiter()
+    {
+        $this->assertEquals($this->separator, $this->reader->getDelimiter());
+    }
+
+    /**
+     * in $this->setUp() we did not specify the enclosure character, so
+     * we expect it to be the default which is <code>"</code>
+     */
+    public function testEnclosure()
+    {
+        $this->assertEquals('"', $this->reader->getEnclosure());
+    }
+
+    /**
+     * in $this->setUp() we did not specify the escape character, so
+     * we expect it to be the default which is <code>\</code>
+     */
+    public function testEscape()
+    {
+        $this->assertEquals('\\', $this->reader->getEscape());
     }
 
 }

@@ -34,6 +34,12 @@ class File
     protected $filepath;
 
     /**
+     * @var int number of the most recently read or writtenline of the file.
+     */
+    protected $lineNumber;
+
+
+    /**
      * @param string $filepath an absolute or relative path to a file. In case of a relative path
      *        the current working directory is prefixed to the path to make it absolute.
      *
@@ -104,5 +110,16 @@ class File
     {
         return $this->filepath;
     }
+
+    /**
+     * The number of the most recently read or written line.
+     *
+     * @return int the number of the most recently read or written line.
+     */
+    public function getLineNumber()
+    {
+        return $this->lineNumber;
+    }
+
 
 }

@@ -33,10 +33,6 @@ class Reader extends File
     const RETURN_EVERY_LINE = 1;
     const SKIP_EMPTY_LINES = 2;
 
-    /**
-     * @var int the most recently read line of the file.
-     */
-    protected $lineNumber;
 
     /**
      * @param string $filepath an absolute or relative path to a file. In case of a relative path
@@ -81,17 +77,7 @@ class Reader extends File
         }
         return null;
     }
-
-    /**
-     * The number of the most recently read line.
-     *
-     * @return int the number of the most recently read line.
-     */
-    public function getLineNumber()
-    {
-        return $this->lineNumber;
-    }
-
+    
     /**
      * Check whether a line is to be considered empty.
      *

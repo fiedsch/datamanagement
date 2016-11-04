@@ -124,7 +124,7 @@ class CsvReader extends Reader
     {
         $line = parent::getLine($mode);
         if ($line !== null) {
-            // we have recursive calls to skip empty lines so $line might already by paresd
+            // we have recursive calls to skip empty lines so $line might already by parsed
             if (is_array($line)) { return $line; }
             return str_getcsv($line, $this->delimiter, $this->enclosure, $this->escape);
         }

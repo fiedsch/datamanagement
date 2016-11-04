@@ -111,6 +111,7 @@ class CsvWriter extends Writer
             throw new \RuntimeException("can not write CSV data. supplied data is not an array.");
         }
         fputcsv($this->handle, $data, $this->delimiter, $this->enclosure, $this->escape);
+        ++$this->lineNumber;
     }
 
 }

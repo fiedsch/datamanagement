@@ -123,12 +123,12 @@ class CsvReader extends Reader
     public function getLine($mode = self::RETURN_EVERY_LINE)
     {
         $line = parent::getLine($mode);
-        if ($line !== null) {
-            // we have recursive calls to skip empty lines so $line might already by parsed
-            if (is_array($line)) { return $line; }
-            return str_getcsv($line, $this->delimiter, $this->enclosure, $this->escape);
+        if ($line === null) { return null; }
+        $parsed = str_getcsv($line, $this->delimiter, $this->enclosure, $this->escape);
+        if ($mode === self::SKIP_EMPTY_LINES && self::isEmpty($parsed)) {
+            return $this->getLine($mode);
         }
-        return null;
+        return $parsed;
     }
 
     /**
@@ -152,6 +152,9 @@ class CsvReader extends Reader
      */
     public static function isEmpty($line, $strict = false)
     {
+        if (!is_array($line)) {
+            throw new \RuntimeException("got a string that should already have been split into an array");
+        }
         $test = array_filter($line, function ($element) use ($strict) {
             return !Reader::isEmpty($element, $strict);
         });

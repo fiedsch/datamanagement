@@ -1,5 +1,5 @@
 <?php
-
+use Fiedsch\Data\File\Reader;
 use Fiedsch\Data\File\CsvReader;
 
 
@@ -8,7 +8,7 @@ class CsvReaderTest extends PHPUnit_Framework_TestCase
     /**
      * @var string
      */
-    protected $filepath = 'tests/assets/data.txt';
+    protected $filepath = 'tests/assets/data.csv';
 
     /**
      * @var string
@@ -44,7 +44,7 @@ class CsvReaderTest extends PHPUnit_Framework_TestCase
     {
         $i = 0;
         $this->assertEquals($i, $this->reader->getLineNumber());
-        while (($line = $this->reader->getLine()) !== null) {
+        while (($line = $this->reader->getLine(Reader::RETURN_EVERY_LINE)) !== null) {
                 $this->assertEquals(++$i, $this->reader->getLineNumber());
         }
     }
@@ -101,4 +101,16 @@ class CsvReaderTest extends PHPUnit_Framework_TestCase
         $this->assertEquals('\\', $this->reader->getEscape());
     }
 
+    /**
+     * (visual debug) not really a test ...
+     */
+    /*
+    public function testDisplayData()
+    {
+        //while (($line = $this->reader->getLine(CsvReader::SKIP_EMPTY_LINES)) !== null) {
+        while (($line = $this->reader->getLine(CsvReader::RETURN_EVERY_LINE)) !== null) {
+            print_r($line);
+        }
+    }
+    */
 }

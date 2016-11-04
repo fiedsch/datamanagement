@@ -72,12 +72,11 @@ class Reader extends File
             if ($mode === self::SKIP_EMPTY_LINES && self::isEmpty($line)) {
                 return $this->getLine($mode);
             }
-
             return rtrim($line, "\r\n");
         }
         return null;
     }
-    
+
     /**
      * Check whether a line is to be considered empty.
      *

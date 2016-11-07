@@ -205,7 +205,7 @@ class TokenCreator
     }
 
     /**
-     * Get a random character
+     * Get random characters
      *
      * @param int $count number of characters to return
      *

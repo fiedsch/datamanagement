@@ -118,4 +118,14 @@ class QuotaCell
         return $this->counts[$key] >= $this->targets[$key];
     }
 
+    /**
+     * Do we have a target configuration for the key?
+     * @param mixed $key
+     *
+     * @return bool
+     */
+    public function hasTarget($key)
+    {
+        return isset($this->targets[$key])
+    }
 }

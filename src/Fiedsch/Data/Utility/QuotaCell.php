@@ -126,6 +126,6 @@ class QuotaCell
      */
     public function hasTarget($key)
     {
-        return isset($this->targets[$key])
+        return isset($this->targets[$key]);
     }
 }

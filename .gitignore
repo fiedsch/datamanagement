@@ -1,5 +1,5 @@
 vendor/
-examples/
+examples/assets/*
 run.sh
 ideas.md
 composer.lock

@@ -55,4 +55,14 @@ class QuotaCellTest extends PHPUnit_Framework_TestCase
         $this->assertFalse($cell->isFull());
     }
 
+    public function testHasTarget()
+    {
+        $targets = ['42' => 10, '43' => 20, '44' => 12];
+        $cell = new QuotaCell($targets);
+        foreach ($targets as $key => $count) {
+            $this->assertTrue($cell->hasTarget($key));
+        }
+        $this->assertFalse($cell->hasTarget('not in list'));
+    }
+
 }

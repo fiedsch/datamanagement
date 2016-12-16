@@ -64,8 +64,8 @@ class QuotaCell
     /**
      * Could we add $amount without exceeding the quota?
      *
-     * @param mixed $key
      * @param int $amount
+     * @param mixed $key
      *
      * @return boolean
      * @throws \RuntimeException

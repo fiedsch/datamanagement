@@ -101,4 +101,16 @@ class AugmentorTest extends PHPUnit_Framework_TestCase
         $this->assertEquals($a['foo'], ['a' => 'a', 'b' => 'B']);
     }
 
+    /**
+     * @
+     */
+    public function testRuleAlreadyExists()
+    {
+        $this->expectException(RuntimeException::class);
+        $a = new Augmentor();
+        $a->addRule('foo', function(Augmentor $augmentor) { return 'foo'; });
+        $a->addRule('bar', function(Augmentor $augmentor) { return 'bar'; });
+        $a->addRule('foo', function(Augmentor $augmentor) { return 'foo again'; });
+    }
+
 }

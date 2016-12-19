@@ -119,9 +119,13 @@ class Augmentor extends Container
      *
      * @param string $name the name of the augmentation rule
      * @param callable $rule the code that will be executed
+     * @throws \RuntimeException
      */
     public function addRule($name, $rule)
     {
+        if (isset($this[self::rule($name)])) {
+            throw new \RuntimeException("rule '$name' already exists'");
+        }
         $this[self::rule($name)] = $this->protect($rule);
     }
 

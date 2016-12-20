@@ -15,6 +15,7 @@ use Pimple\Container;
 
 /**
  * Class Augmentor
+ *
  * @package Fiedsch\Data
  *
  * An Augmentor augments data according to specified rules.
@@ -55,7 +56,7 @@ class Augmentor extends Container
         // initialize
         $this[self::KEY_AUGMENTED] = [];
         // get rules
-        $rulekeys = array_filter($this->keys(), function ($key) {
+        $rulekeys = array_filter($this->keys(), function($key) {
             return strpos($key, self::PREFIX_RULE) === 0;
         });
         // apply rules
@@ -68,12 +69,21 @@ class Augmentor extends Container
             $this[self::KEY_AUGMENTED] = array_merge($this[self::KEY_AUGMENTED], $augmentation_step);
         }
         $this->checkAugmented();
-        // there is no point in returning the passed in $data
-        //return array(
-        //    self::KEY_DATA => $data,
-        //    self::KEY_AUGMENTED => $this[self::KEY_AUGMENTED],
-        //);
-        return $this[self::KEY_AUGMENTED];
+        if ($this->hasRequiredColumnsSpecification()) {
+            // Check if we have data for columns not specified in $this[self::KEY_COLNAMES]
+            $augmented_keys = array_keys($this[self::KEY_AUGMENTED]);
+            $redundant_keys = array_diff($augmented_keys, $this[self::KEY_COLNAMES]);
+            if (!empty($redundant_keys)) {
+                throw new \RuntimeException("found keys not specified as required field: " . json_encode(array_values($redundant_keys)));
+            }
+            $result = [];
+            foreach ($this[self::KEY_COLNAMES] as $key) {
+                $result[$key] = $this[self::KEY_AUGMENTED][$key];
+            }
+            return $result;
+        } else {
+            return $this[self::KEY_AUGMENTED];
+        }
     }
 
     /**
@@ -82,10 +92,10 @@ class Augmentor extends Container
      */
     protected function checkAugmented()
     {
-        if ($this->offsetExists(self::KEY_COLNAMES) && is_array($this[self::KEY_COLNAMES])) {
+        if ($this->hasRequiredColumnsSpecification()) {
             foreach ($this[self::KEY_COLNAMES] as $key) {
                 if (!array_key_exists($key, $this[self::KEY_AUGMENTED])) {
-                    throw new \RuntimeException("required field '$key' does not exist in augmented data'");
+                    throw new \RuntimeException("required column '$key' does not exist in augmented data'");
                 }
             }
         }
@@ -98,6 +108,23 @@ class Augmentor extends Container
     public function setRequiredColumns(array $colnames)
     {
         $this[self::KEY_COLNAMES] = $colnames;
+    }
+
+    /**
+     * @return array
+     */
+    public function getRequiredColumns()
+    {
+        return $this[self::KEY_COLNAMES];
+    }
+
+    /**
+     * Do we have the required column names set in $this[self::KEY_COLNAMES]?
+     *
+     * @return boolean
+     */
+    public function hasRequiredColumnsSpecification() {
+        return $this->offsetExists(self::KEY_COLNAMES) && is_array($this[self::KEY_COLNAMES]);
     }
 
     /**

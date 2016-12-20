@@ -102,7 +102,7 @@ class AugmentorTest extends PHPUnit_Framework_TestCase
     }
 
     /**
-     * @
+     *
      */
     public function testRuleAlreadyExists()
     {
@@ -113,4 +113,35 @@ class AugmentorTest extends PHPUnit_Framework_TestCase
         $a->addRule('foo', function(Augmentor $augmentor) { return 'foo again'; });
     }
 
+    /**
+     *
+     */
+    public function testHasRequiredColumnsSpecification() {
+        $a = new Augmentor();
+        $this->assertFalse($a->hasRequiredColumnsSpecification());
+        $a->setRequiredColumns(['a','b']);
+        $this->assertTrue($a->hasRequiredColumnsSpecification());
+    }
+
+    /**
+     * call to augment() with missing rule that produces 'b' has no effect
+     * as long as setRequiredColumns() was not used.
+     */
+    public function testWithoutRequiredColumnsSpecification() {
+        $a = new Augmentor();
+        $a->addRule('foo', function(Augmentor $a) { return ['foo'=>42]; });
+        $a->augment([]);
+    }
+
+    /**
+     * call to augment() with missing rule that produces 'b' has to cause
+     * an exception.
+     */
+    public function testWithRequiredColumnsSpecification() {
+        $this->expectException(RuntimeException::class);
+        $a = new Augmentor();
+        $a->addRule('foo', function(Augmentor $a) { return ['foo'=>42]; });
+        $a->setRequiredColumns(['a','b']);
+        $a->augment([]);
+    }
 }

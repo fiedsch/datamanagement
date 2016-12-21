@@ -137,11 +137,26 @@ class AugmentorTest extends PHPUnit_Framework_TestCase
      * call to augment() with missing rule that produces 'b' has to cause
      * an exception.
      */
-    public function testWithRequiredColumnsSpecification() {
+    public function testWithRequiredColumnsSpecificationMissingColumn() {
         $this->expectException(RuntimeException::class);
         $a = new Augmentor();
-        $a->addRule('foo', function(Augmentor $a) { return ['foo'=>42]; });
+        $a->addRule('foo', function(Augmentor $a) { return ['a'=>42]; });
         $a->setRequiredColumns(['a','b']);
         $a->augment([]);
     }
+
+    /**
+     * call to augment() with rule that produces 'c' which is not specified
+     * in setRequiredColumns() has to cause an exception.
+     *
+     * @expectedException RuntimeException
+     * @expectedExceptionMessage found keys not specified as required field: ["c"]
+     */
+    public function testWithRequiredColumnsSpecificationExtraColumn() {
+        $a = new Augmentor();
+        $a->addRule('foo', function(Augmentor $a) { return ['a'=>1,'b'=>2,'c'=>42]; });
+        $a->setRequiredColumns(['a','b']);
+        $a->augment([]);
+    }
+
 }

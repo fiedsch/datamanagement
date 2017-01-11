@@ -8,8 +8,9 @@ interface AugmentationRule
 {
     /**
      * @param Augmentor $augmentor
+     * @param array $data
      *
      * @return array
      */
-    public function __invoke(Augmentor $augmentor);
+    public function __invoke(Augmentor $augmentor, $data = null);
 }

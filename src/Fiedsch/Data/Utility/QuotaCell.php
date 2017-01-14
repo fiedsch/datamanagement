@@ -30,11 +30,17 @@ class QuotaCell
     protected $targets;
 
     /**
+     * @var string
+     */
+    protected $cellPathSeparator = '.';
+
+    /**
      * @param array|int $target
      */
     public function __construct($target)
     {
         $this->targets = is_array($target) ? $target : [$target];
+        $this->targets = $this->flattenArray($this->targets);
         $this->counts = array_map(function () {
             return 0;
         }, $this->targets);
@@ -128,4 +134,90 @@ class QuotaCell
     {
         return isset($this->targets[$key]);
     }
+
+    /**
+     * Create the key for a multidimensional target entry by
+     * concatinating them -- separated by whatever is stored in
+     * $this->keySeparator (a '.' be default).
+     *
+     * @param array $nodeNames
+     * @return string
+     */
+    public function makeArrayKey($nodeNames)
+    {
+        return implode($this->cellPathSeparator, $nodeNames);
+    }
+
+    /**
+     * @param string $separator
+     */
+    public function setCellPathSeparator($separator)
+    {
+        $this->cellPathSeparator = $separator;
+    }
+
+    /**
+     * Is the supplied array flat. I.e. are all its values scalars?
+     *
+     * @param array $data
+     * @return bool
+     */
+    protected static function isFlatArray($data)
+    {
+        foreach ($data as $k => $v) {
+            if (is_array($v)) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    /**
+     * Create a flat version of the supplied data where the keys
+     * are created by concatenating the original keys "of the path"
+     * to the scalar value.
+     *
+     * Example:
+     * $data = [
+     *            'a' => 1,
+     *            'b' => [
+     *                    'x' => 'A',
+     *                    'y'=> [
+     *                            'B' => 1,
+     *                            'C' => 2,
+     *                          ]
+     *                   ],
+     *          ]
+     * becomes
+     * $data = [
+     *          'a' => 1,
+     *          'c.x' => 'A',
+     *          'c.y.B' => 1,
+     *          'c.y.C' => 2,
+     *          ],
+     *
+     * @param array $data
+     * @return array
+     */
+    protected function flattenArray($data)
+    {
+        if (self::isFlatArray($data)) {
+                return $data;
+        }
+        $result = [];
+        foreach ($data as $k => $v) {
+            if (!is_array($v)) {
+                $result[$k] = $v;
+            } else {
+                foreach ($v as $kk => $vv) {
+                    $result[$this->makeArrayKey([$k,$kk])] = $vv;
+                }
+            }
+        }
+        if (!self::isFlatArray($data)) {
+            return $this->flattenArray($result);
+        }
+        return $result;
+    }
+
 }

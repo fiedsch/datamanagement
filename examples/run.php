@@ -107,14 +107,8 @@ try {
         return $augmented;
     });
 
-    // Step two: Add a unique token and a time stamp. This step does not use $data
-    // or the $augmented data so far but they still have to be passed as arguments
-    // to the anonymous function that performs the augmentation.
-    /*
-    $augmentor->addRule('token', function (Augmentor $augmentor) {
-        return ['token' => $augmentor['token']->getUniqueToken() ];
-    });
-    */
+    // Step two: Add a unique token
+
     $augmentor->addRule('token', new TokenRule());
 
     // Drawing a sample with qouta for the ssmple cells

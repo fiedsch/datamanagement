@@ -14,6 +14,9 @@ namespace Fiedsch\Data\Utility;
  *
  * Manage quota on defined cells that can be multidimensional
  *
+ * TODO: rename this class. It manages quota for various cells at at time
+ * so it should rather be something like QuotaCellManager or the like.
+ *
  * @package Fiedsch\Data\Utility
  */
 class QuotaCell

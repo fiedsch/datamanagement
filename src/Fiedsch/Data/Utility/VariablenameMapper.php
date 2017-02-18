@@ -24,15 +24,29 @@ class VariablenameMapper
     protected $throwException;
 
     /**
-     * @param $names
-     * @param $throwException when a lookup fails
+     * @param array $names
+     * @param boolean $throwException throw an exception when a lookup fails
      */
     public function __construct($names, $throwException = false)
     {
-        $this->lookup = array_flip($names);
+        $this->lookup =
+            array_filter(
+                array_flip(
+                    array_map(
+                        function($element) {
+                            return trim($element);
+                        },
+                        $names
+                    )
+                ),
+                function($element) {
+                    return trim($element) !== '';
+                },
+                ARRAY_FILTER_USE_KEY
+            );
         $this->throwException = $throwException;
         if (count($this->lookup) != count($names)) {
-            throw new \RuntimeException("supplied array of names contained invalid values");
+            throw new \RuntimeException("supplied array of names contained invalid values or duplicates.");
         }
     }
 
@@ -54,4 +68,11 @@ class VariablenameMapper
         return -1;
     }
 
+    /**
+     * @return array the mapping of column names to column indexes
+     */
+    public function getMapping()
+    {
+        return $this->lookup;
+    }
 }

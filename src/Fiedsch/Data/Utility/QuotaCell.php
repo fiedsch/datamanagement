@@ -64,6 +64,7 @@ class QuotaCell
     public function add($amount, $key = 0, $force = false)
     {
         if ($force || $this->canAdd($amount, $key)) {
+            if (!isset($this->counts[$key])) { $this->counts[$key] = 0; }
             $this->counts[$key] += $amount;
             return true;
         }

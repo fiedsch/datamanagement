@@ -1,12 +1,16 @@
 <?php
-
-namespace Fiedsch\Data\Augmentation\Rules;
-
 /**
- * Usage example:
+ * @package    Datamanagement
+ * @author     Andreas Fieger <fiedsch@ja-eh.at>
+ * @copyright  2016 Andreas Fieger
+ * @license    MIT
+ * @link       https://github.com/fiedsch/datamanagement
  *
+ * Usage example:
  * $augmentor->addRule('token', new TokenRule());
  */
+
+namespace Fiedsch\Data\Augmentation\Rules;
 
 use Fiedsch\Data\Augmentation\Augmentor;
 

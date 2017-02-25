@@ -1,5 +1,17 @@
 <?php
 
+/**
+ * @package    Datamanagement
+ * @author     Andreas Fieger <fiedsch@ja-eh.at>
+ * @copyright  2016 Andreas Fieger
+ * @license    MIT
+ * @link       https://github.com/fiedsch/datamanagement
+ *
+ * Marker interface
+ * Objects implementing __invoke can be used as callables (since PHP 5.3)
+ * see Augmantor::augment() and Augmentor::addRule()
+ */
+
 namespace Fiedsch\Data\Augmentation\Rules;
 
 use Fiedsch\Data\Augmentation\Augmentor;

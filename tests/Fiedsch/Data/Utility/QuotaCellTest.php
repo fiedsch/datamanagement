@@ -1,14 +1,12 @@
 <?php
 
 use Fiedsch\Data\Utility\QuotaCell;
+use PHPUnit\Framework\TestCase;
 
-class QuotaCellTest extends PHPUnit_Framework_TestCase
+class QuotaCellTest extends TestCase
 {
 
-    /**
-     * Test basic data augmentation with multidimensional targets
-     */
-    public function testMultidimensionalCell()
+    public function testOnedimensionalArrayTarget()
     {
         $targets = ['x' => 10, 'y' => 20, 'z' => 30];
         $cell = new QuotaCell($targets);
@@ -23,36 +21,11 @@ class QuotaCellTest extends PHPUnit_Framework_TestCase
         $this->assertEquals(5, $cell->getCount('x'));
     }
 
-    /**
-     * @expectedException \RuntimeException
-     */
     public function testUndefinedOffset()
     {
         $targets = ['x' => 10, 'y' => 20, 'z' => 30];
         $cell = new QuotaCell($targets);
-        $cell->add(5, 'a'); // index a is not defined
-    }
-
-    /**
-     * test fallback to univariate target if default arguments are used
-     */
-    public function testScalarCell()
-    {
-        $cell = new QuotaCell(100);
-        $this->assertTrue($cell->add(40));
-        $this->assertEquals(40, $cell->getCount());
-        $this->assertTrue($cell->canAdd(60));
-        $this->assertFalse($cell->canAdd(61));
-        $this->assertFalse($cell->isFull());
-
-        $this->assertTrue($cell->add(100, 0, true));
-        $this->assertEquals(140, $cell->getCount());
-        $this->assertTrue($cell->isFull());
-
-        // we can also subtract counts
-        $this->assertTrue($cell->add(-200, 0, true));
-        $this->assertEquals(-60, $cell->getCount());
-        $this->assertFalse($cell->isFull());
+        $this->assertFalse($cell->add(5, 'a')); // index a is not defined, so we can't add to it
     }
 
     public function testHasTarget()
@@ -65,48 +38,47 @@ class QuotaCellTest extends PHPUnit_Framework_TestCase
         $this->assertFalse($cell->hasTarget('not in list'));
     }
 
-    public function testMakeArrayKey()
-    {
-        $cell = new QuotaCell(0);
-        $this->assertEquals('a.b.c', $cell->makeArrayKey(['a','b','c']));
-
-        $cell->setCellPathSeparator('|');
-        $this->assertEquals('a|b|c', $cell->makeArrayKey(['a','b','c']));
-    }
-
     public function testMultidimensionalTargets()
     {
         $targets = [
-            'a' => 42,
-            'b' => [
-                'a' => 11,
-                'b' => 12,
-            ],
-            'c' => [
-                'a' => [
-                    'a' => 111,
-                    'b' => 112,
+            0 => 42,
+            1 => 42,
+            'a' =>
+                [
+                    0 => 42,
+                    1 => 42,
+                    'b' => [
+                        0 => 42,
+                        1 => 4242
+                    ],
                 ],
-                'b' => [
-                    'a' => 211,
-                    'b' => 212,
-                ],
-            ],
-        ];
-        $flat_targets = [
-            'a'     => 42,
-            'b.a'   => 11,
-            'b.b'   => 12,
-            'c.a.a' => 111,
-            'c.a.b' => 112,
-            'c.b.a' => 211,
-            'c.b.b' => 212,
         ];
 
         $cell = new QuotaCell($targets);
-        foreach ($flat_targets as $key => $count) {
-            $this->assertTrue($cell->hasTarget($key));
-        }
+
+        $this->assertEquals($targets, $cell->getTargets());
+
+        $expectedcounts = $targets;
+        array_walk_recursive($expectedcounts, function(&$value, $key) { $value = 0; });
+
+        $this->assertEquals($expectedcounts, $cell->getCounts());
+
+        $deepkey = ['a','b',1];
+
+        $this->assertEquals(4242, $cell->getTarget($deepkey));
+
+        $this->assertTrue($cell->add(4241, $deepkey));
+
+        $this->assertEquals(4241, $cell->getCount($deepkey));
+
+        $this->assertFalse($cell->add(2, $deepkey));
+
+        $this->assertEquals(4241, $cell->getCount($deepkey));
+
+        $this->assertTrue($cell->add(-4240, $deepkey));
+
+        $this->assertEquals(1, $cell->getCount($deepkey));
+
     }
 
 }

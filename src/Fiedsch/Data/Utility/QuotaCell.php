@@ -21,90 +21,153 @@ namespace Fiedsch\Data\Utility;
  */
 class QuotaCell
 {
-
-    /**
-     * @var int
-     */
-    protected $counts;
-
     /**
      * @var array
      */
     protected $targets;
 
     /**
-     * @var string
+     * @var array
      */
-    protected $cellPathSeparator = '.';
+    protected $counts;
 
     /**
-     * @param array|int $target
+     * @param array $targets
      */
-    public function __construct($target)
+    public function __construct(array $targets)
     {
-        $this->targets = is_array($target) ? $target : [$target];
-        $this->targets = $this->flattenArray($this->targets);
-        $this->counts = array_map(function () {
-            return 0;
-        }, $this->targets);
-
+        $this->targets = $targets;
+        $this->counts = $this->targets;
+        array_walk_recursive($this->counts, function(&$value, $key) { $value = 0;  });
     }
 
     /**
      * Try to change (typically increment) the counter and return
-     * true if successfull (i.e. adding $amount doesnot reach the
-     * quota).
+     * true if successfull (i.e. there is an entry for the $key and
+     * adding $amount does not reach the quota limit).
      *
      * @param int $amount the amount to add
-     * @param mixed $key the key in case of multidimensional targets
-     * @param boolean $force set to true if $amount shall always added regardless of exceeding the quota
-     *
-     * @return boolean
+     * @param int|string|array $key the key.
+     * @param boolean $force set to true if $amount shall always added regardless
+     *                       of exceeding the quota limit
+     * @return boolean true if $amount could be added, false otherwise
      */
-    public function add($amount, $key = 0, $force = false)
+    public function add($amount, $key = '', $force = false)
     {
         if ($force || $this->canAdd($amount, $key)) {
-            if (!isset($this->counts[$key])) { $this->counts[$key] = 0; }
-            $this->counts[$key] += $amount;
+            $this->setCount($key, $this->getCount($key) + $amount, true);
             return true;
         }
         return false;
     }
 
     /**
-     * Could we add $amount without exceeding the quota?
+     * Could we add($amount, $key) without exceeding the quota?
      *
      * @param int $amount
-     * @param mixed $key
+     * @param int|string|array $key
      *
      * @return boolean
-     * @throws \RuntimeException
      */
-    public function canAdd($amount, $key = 0)
+    public function canAdd($amount, $key = '')
     {
-        if (!isset($this->targets[$key])) {
-            throw new \RuntimeException("undefined key '$key'");
-        }
-        return $this->counts[$key] + $amount <= $this->targets[$key];
+        return $this->getCount($key) + $amount <= $this->getTarget($key, 0);
     }
 
     /**
-     * @param mixed $key
-     *
-     * @return int
-     * @throws \RuntimeException
+     * @param int|string|array $key
+     * @param array $target the target array from which we try to get the value for the $key
+     * @param null|int $default the value that will be returned if there is no entry for the $key
      */
-    public function getCount($key = 0)
+    protected function getDeepArrayValue($key, &$target, $default = null)
     {
-        if (!isset($this->targets[$key])) {
-            throw new \RuntimeException("undefined key '$key'");
+        if (!is_array($key)) {
+            if (!isset($target[$key])) {
+                return $default;
+            }
+            return $target[$key];
         }
-        return $this->counts[$key];
+        $pointer = &$target;
+        for ($i = 0; $i < count($key); $i++) {
+            if (!isset($pointer[$key[$i]])) {
+                return $default;
+            }
+            $pointer = &$pointer[$key[$i]];
+        }
+        return $pointer;
     }
 
     /**
-     *
+     * @param int|string|array $key
+     * @param array $target the target array from which we try to get the value for the $key
+     * @param null|int $default the value that will be returned if there is no entry for the $key
+     * @param boolean $force create entry in array if it did not exist yet
+     * @throws \RuntimeException
+     */
+    protected function setDeepArrayValue($key, &$target, $value, $force = false)
+    {
+        if (!is_array($key)) {
+            if (!isset($target[$key])) {
+                if (!$force) {
+                    throw new \RuntimeException("no entry for key '$key''");
+                }
+            }
+            $target[$key] = $value;
+        }
+        $pointer = &$target;
+        for ($i = 0; $i < count($key); $i++) {
+            if (!isset($pointer[$key[$i]])) {
+                if (!$force) {
+                    $k = implode(';', $key);
+                    throw new \RuntimeException("no entry for key '$k''");
+                }
+            }
+            $pointer = &$pointer[$key[$i]];
+        }
+        $pointer = $value;
+    }
+
+    /**
+     * @param int|string|array $key
      * @return int
+     */
+    public function getCount($key)
+    {
+        return $this->getDeepArrayValue($key, $this->counts, 0);
+    }
+
+    /**
+     * @param int|string|array $key
+     * @param null|int $default value that will be returned if there is no target for $key
+     * @return int|null null if target is not set
+     */
+    public function getTarget($key, $default = null)
+    {
+        return $this->getDeepArrayValue($key, $this->targets, $default);
+    }
+
+    /**
+     * @param int|string|array $key
+     * @apram boolean $force
+     * @throws \RuntimeException
+     */
+    protected function setCount($key, $value, $force = false)
+    {
+        $this->setDeepArrayValue($key, $this->counts, $value, $force);
+    }
+
+    /**
+     * @param int|string|array $key
+     * @apram boolean $force
+     * @throws \RuntimeException
+     */
+    protected function setTarget($key, $value, $force = false)
+    {
+        $this->setDeepArrayValue($key, $this->targets, $value, $force);
+    }
+
+    /**
+     * @return array
      */
     public function getCounts()
     {
@@ -112,116 +175,39 @@ class QuotaCell
     }
 
     /**
-     * Did we already reach the quota? (In case of multidimensional
-     * cells: reach the quota of the specified cell).
+     * @return array
+     */
+    public function getTargets()
+    {
+        return $this->targets;
+    }
+
+    /**
+     * Did we already reach the quota limit for the cell defined by the $key?
      *
-     * @param mixed $key
+     * @param int|string|array $key
      *
      * @return boolean
      * @throws \RuntimeException
      */
-    public function isFull($key = 0)
+    public function isFull($key)
     {
-        if (!isset($this->targets[$key])) {
+        if (!$this->hasTarget($key)) {
             throw new \RuntimeException("undefined key '$key'");
         }
-        return $this->counts[$key] >= $this->targets[$key];
+        return $this->getCount($key) >= $this->getTarget($key);
     }
 
     /**
      * Do we have a target configuration for the key?
-     * @param mixed $key
+     *
+     * @param int|string|array $key
      *
      * @return bool
      */
     public function hasTarget($key)
     {
-        return isset($this->targets[$key]);
-    }
-
-    /**
-     * Create the key for a multidimensional target entry by
-     * concatinating them -- separated by whatever is stored in
-     * $this->keySeparator (a '.' be default).
-     *
-     * @param array $nodeNames
-     * @return string
-     */
-    public function makeArrayKey($nodeNames)
-    {
-        return implode($this->cellPathSeparator, $nodeNames);
-    }
-
-    /**
-     * @param string $separator
-     */
-    public function setCellPathSeparator($separator)
-    {
-        $this->cellPathSeparator = $separator;
-    }
-
-    /**
-     * Is the supplied array flat. I.e. are all its values scalars?
-     *
-     * @param array $data
-     * @return bool
-     */
-    protected static function isFlatArray($data)
-    {
-        foreach ($data as $k => $v) {
-            if (is_array($v)) {
-                return false;
-            }
-        }
-        return true;
-    }
-
-    /**
-     * Create a flat version of the supplied data where the keys
-     * are created by concatenating the original keys "of the path"
-     * to the scalar value.
-     *
-     * Example:
-     * $data = [
-     *            'a' => 1,
-     *            'b' => [
-     *                    'x' => 'A',
-     *                    'y'=> [
-     *                            'B' => 1,
-     *                            'C' => 2,
-     *                          ]
-     *                   ],
-     *          ]
-     * becomes
-     * $data = [
-     *          'a' => 1,
-     *          'c.x' => 'A',
-     *          'c.y.B' => 1,
-     *          'c.y.C' => 2,
-     *          ],
-     *
-     * @param array $data
-     * @return array
-     */
-    protected function flattenArray($data)
-    {
-        if (self::isFlatArray($data)) {
-                return $data;
-        }
-        $result = [];
-        foreach ($data as $k => $v) {
-            if (!is_array($v)) {
-                $result[$k] = $v;
-            } else {
-                foreach ($v as $kk => $vv) {
-                    $result[$this->makeArrayKey([$k,$kk])] = $vv;
-                }
-            }
-        }
-        if (!self::isFlatArray($data)) {
-            return $this->flattenArray($result);
-        }
-        return $result;
+        return null !== $this->getTarget($key, null);
     }
 
 }

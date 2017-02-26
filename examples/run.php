@@ -26,9 +26,6 @@ try {
     // Handle the header with column names:
     // Use a VariablenameMapper to access columns by their name.
 
-    $reader->readHeader();
-    $mapper = new VariablenameMapper($reader->getHeader());
-
     print "will write to assets/testdata.augmented.csv\n";
 
     $writer = new CsvWriter("assets/testdata.augmented.txt", "\t");
@@ -36,10 +33,6 @@ try {
     // Augment data using an Augmentor.
 
     $augmentor = new Augmentor();
-
-    // register the mapper if we want to use it in the augmentation rules below
-
-    $augmentor['mapper'] = $mapper;
 
     // The optional argument passed to the constructor can be an array of column
     // names that we expect to be set in the augmantation steps. If the steps fail
@@ -133,7 +126,14 @@ try {
     // Empty lines are frequently generated when exporting data from a spreadsheet.
     // They will appear as somethig like ;;;;;; in the export file (when ; is the delimiter).
 
-    // Reminder: we did already read the header (first data row) above.
+    // First, read the hader and create a VariablenameMapper from the names found
+    // register the mapper as we did use it in the augmentation rules above
+    $reader->readHeader();
+    $mapper = new VariablenameMapper($reader->getHeader());
+    $augmentor['mapper'] = $mapper;
+
+    // Next, the boilerplate code: iterate over all non empty lines and augment
+    // and write new header (augmented columns plus original columsn)
 
     $header_written = false;
 

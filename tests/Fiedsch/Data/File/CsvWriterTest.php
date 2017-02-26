@@ -2,8 +2,9 @@
 
 use Fiedsch\Data\File\CsvWriter;
 use Fiedsch\Data\File\CsvReader;
+use PHPUnit\Framework\TestCase;
 
-class CsvWriterTest extends PHPUnit_Framework_TestCase
+class CsvWriterTest extends TestCase
 {
     /**
      * @var string

@@ -1,9 +1,10 @@
 <?php
 
 use Fiedsch\Data\Augmentation\Augmentor;
+use PHPUnit\Framework\TestCase;
 
 
-class AugmentorTest extends PHPUnit_Framework_TestCase
+class AugmentorTest extends TestCase
 {
 
     /**
@@ -131,6 +132,11 @@ class AugmentorTest extends PHPUnit_Framework_TestCase
         $a = new Augmentor();
         $a->addRule('foo', function(Augmentor $a) { return ['foo'=>42]; });
         $a->augment([]);
+
+        $this->expectException(RuntimeException::class);
+        $a->setRequiredColumns(['b','foo']);
+        $a->augment([]);
+
     }
 
     /**

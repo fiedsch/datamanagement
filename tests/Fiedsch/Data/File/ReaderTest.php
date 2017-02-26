@@ -1,9 +1,10 @@
 <?php
 
 use Fiedsch\Data\File\Reader;
+use PHPUnit\Framework\TestCase;
 
 
-class ReaderTest extends PHPUnit_Framework_TestCase
+class ReaderTest extends TestCase
 {
     /**
      * @var string

@@ -1,9 +1,10 @@
 <?php
 use Fiedsch\Data\File\Reader;
 use Fiedsch\Data\File\CsvReader;
+use PHPUnit\Framework\TestCase;
 
 
-class CsvReaderTest extends PHPUnit_Framework_TestCase
+class CsvReaderTest extends TestCase
 {
     /**
      * @var string

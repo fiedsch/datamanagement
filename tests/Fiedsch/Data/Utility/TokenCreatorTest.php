@@ -1,8 +1,9 @@
 <?php
 
 use Fiedsch\Data\Utility\TokenCreator;
+use PHPUnit\Framework\TestCase;
 
-class TokenCreatorTest extends PHPUnit_Framework_TestCase
+class TokenCreatorTest extends TestCase
 {
 
     public function testDefaultLength()

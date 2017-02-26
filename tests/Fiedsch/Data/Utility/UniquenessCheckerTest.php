@@ -1,8 +1,9 @@
 <?php
 
 use Fiedsch\Data\Utility\UniquenessChecker;
+use PHPUnit\Framework\TestCase;
 
-class UniquenessCheckerTest extends PHPUnit_Framework_TestCase
+class UniquenessCheckerTest extends TestCase
 {
 
     /**

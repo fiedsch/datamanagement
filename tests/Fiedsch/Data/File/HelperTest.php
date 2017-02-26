@@ -1,8 +1,9 @@
 <?php
 
 use Fiedsch\Data\File\Helper;
+use PHPUnit\Framework\TestCase;
 
-class HelperTest extends PHPUnit_Framework_TestCase
+class HelperTest extends TestCase
 {
 
     public function testSC()

@@ -1,8 +1,9 @@
 <?php
 
 use Fiedsch\Data\Utility\VariablenameMapper;
+use PHPUnit\Framework\TestCase;
 
-class VariablenameMapperTest extends PHPUnit_Framework_TestCase
+class VariablenameMapperTest extends TestCase
 {
 
     /**

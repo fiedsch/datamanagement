@@ -2,8 +2,9 @@
 
 use Fiedsch\Data\File\Writer;
 use Fiedsch\Data\File\Reader;
+use PHPUnit\Framework\TestCase;
 
-class WriterTest extends PHPUnit_Framework_TestCase
+class WriterTest extends TestCase
 {
     /**
      * @var string

@@ -59,6 +59,7 @@ class VariablenameMapper
      */
     public function getColumnNumber($name)
     {
+        $name = trim($name);
         if (array_key_exists($name, $this->lookup)) {
             return $this->lookup[$name];
         }

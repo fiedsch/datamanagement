@@ -31,7 +31,7 @@ try {
       print_r($line);
     }
   }
-  $reader->close();
+  // $reader->close(); // not needed as it will be automatically called when there are no more lines
 
 } catch (Exception $e) {
     print $e->getMessage() . "\n";
@@ -84,18 +84,15 @@ try {
    
    $reader->readHeader();
    
-   while (($line = $reader->getLine()) !== null) {
-     if (!$reader->isEmpty($line)) {
-       $result = $augmentor->augment($line);
-       if (!$header_written) {
-          $writer->printLine(array_merge(['input_line'], array_keys($result), $reader->getHeader()));
-          $header_written = true;
-       }
-       $writer->printLine(array_merge([$reader->getLineNumber()], $result, $line));
+   while (($line = $reader->getLine(Reader::SKIP_EMPTY_LINES)) !== null) {
+     $result = $augmentor->augment($line);
+     if (!$header_written) {
+        $writer->printLine(array_merge(['input_line'], array_keys($result), $reader->getHeader()));
+        $header_written = true;
      }
+     $writer->printLine(array_merge([$reader->getLineNumber()], $result, $line));
    }
    
-   // $reader->close(); // not needed as it will be automatically called when there are no more lines
    $writer->close();
  
  } catch (Exception $e) {

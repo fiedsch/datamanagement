@@ -158,6 +158,7 @@ class TokenCreator
             'l' => 'c', // see 'i'
             '1' => 'd', // see 'i'
             'o' => 'f', // 'o' might be confused with '0' (zero)
+            'O' => 'f', // 'O' might be confused with '0' (zero)            
             '0' => 'g', // '0' (zero), see 'o'
             'e' => 'h', // if we use the results in Excel and the like, they might try
             // to convert '123e4' to a number :-(

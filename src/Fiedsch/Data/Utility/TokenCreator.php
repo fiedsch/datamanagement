@@ -141,10 +141,10 @@ class TokenCreator
                     ));
             }
             if ($this->case == self::LOWER && preg_match("/[A-Z]/", $token)) {
-                throw new \LogicException("you requestet lowercase tokens but the token contains uppercase letters");
+                throw new \LogicException("you requested lowercase tokens but the token contains uppercase letters");
             }
             if ($this->case == self::UPPER && preg_match("/[a-z]/", $token)) {
-                throw new \LogicException("you requestet uppercase tokens but the token contains lowercase letters");
+                throw new \LogicException("you requested uppercase tokens but the token contains lowercase letters");
             }
             return $token;
         }

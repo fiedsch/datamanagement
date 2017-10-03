@@ -125,7 +125,7 @@ class TokenCreator
      *
      * @throws \LogicException
      */
-    protected function cretateToken()
+    public function cretateToken()
     {
         // if we have read tokens from file: use them
         if (null !== $this->tokensReadFromFile) {

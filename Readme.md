@@ -100,3 +100,42 @@ try {
  }
  ```
  
+ ### Creating Tokens
+ 
+ Method one: let the `TokenCreator` make sure, we have unique tokens:
+ ```php
+ <?php
+  
+ require __DIR__ . '/../vendor/autoload.php';
+  
+ use Fiedsch\Data\Utility\TokenCreator;
+ use Fiedsch\Data\File\Writer;
+
+
+$creator = new TokenCreator(10, TokenCreator::UPPER);
+
+$output = new Writer('mytokens.txt');
+$numTokens = 1000;
+
+while ($numTokens-- > 0) {
+  $token = $creator->getUniqueToken();
+  $output->printLine([$token]);
+}
+$output->close();
+```
+
+Method two: generate tokens first and then check if they are unique. This might be faster and less 
+ressource consuming for large amounts of tokens:
+
+ ```php
+  // same as above, exept 
+  // $token = $creator->getUniqueToken();
+  // becomes
+  $token = $creator->cretateToken();
+```
+Check that the generated tokens are unique
+```bash
+echo " both lines show the same numbers, there were no duplicate tokens
+wc -l mytokens.csv
+sort mytokens.csv | uniq | wc -l
+```

@@ -146,7 +146,7 @@ class CsvReader extends Reader
      *
      * @param array $line the line to check.
      *
-     * @param boolean $strict controls how to compare "empty" strings (see also FileReader::isEmpty()).
+     * @param boolean $strict controls how to compare "empty" strings (see also Reader::isEmpty()).
      *
      * @return boolean
      */

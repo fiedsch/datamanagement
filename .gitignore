@@ -3,3 +3,4 @@ examples/assets/*
 run.sh
 ideas.md
 composer.lock
+.idea/

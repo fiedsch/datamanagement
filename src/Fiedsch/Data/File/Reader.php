@@ -70,7 +70,7 @@ class Reader extends File
             }
             ++$this->lineNumber;
             if ($mode === self::SKIP_EMPTY_LINES && self::isEmpty($line)) {
-                return $this->getLine($mode);
+                return self::getLine($mode);
             }
             return rtrim($line, "\r\n");
         }

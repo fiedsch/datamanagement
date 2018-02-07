@@ -32,4 +32,14 @@ class HelperTest extends TestCase
         $this->assertEquals(null, Helper::getBySC($data, 'xy'));
     }
 
+    public function testSetArrayKeys() {
+        $data = [1,2,3];
+        $names = ['one', 'two', 'three'];
+        $expected = ['one'=>1, 'two'=>2, 'three'=>3];
+        $this->assertEquals($expected, Helper::setArrayKeys($data, $names));
+
+        $this->expectException(\RuntimeException::class);
+        $this->assertEquals($expected, Helper::setArrayKeys($data, ['one'=>1, 'two'=>2]));
+    }
+
 }

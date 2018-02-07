@@ -90,4 +90,25 @@ class Helper
         return ord(strtoupper($name)) - 64 - 1;
     }
 
+    /**
+     * Map an array with numeric indices to an array with string keys
+     * @param array $data
+     * @param array $names
+     * @throws \RuntimeException
+     */
+    public static function setArrayKeys(array $data, array $names)
+    {
+        if (count($data) !== count($names)) {
+            throw new \RuntimeException("data and names lengths do not match");
+        }
+        $i = 0;
+        foreach ($names as $name) {
+            if (!isset($data[$i])) {
+                throw new \RuntimeException("data is not indexed form 0,1, ... Index $i is missing!");
+            }
+            $tmp[$name] = $data[$i];
+            ++$i;
+        }
+        return $tmp;
+    }
 }

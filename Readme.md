@@ -126,7 +126,7 @@ $output->close();
 ```
 
 Method two: generate tokens first and then check if they are unique. This might be faster and less 
-ressource consuming for large amounts of tokens:
+resource consuming for large amounts of tokens:
 
  ```php
   // same as above, exept 

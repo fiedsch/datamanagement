@@ -162,4 +162,5 @@ try {
     print "done\n";
 } catch (Exception $e) {
     print $e->getMessage() . "\n";
+    exit(1);
 }

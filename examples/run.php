@@ -138,7 +138,6 @@ try {
     $header_written = false;
 
     while (($line = $reader->getLine(Reader::SKIP_EMPTY_LINES)) !== null) {
-        //if (!$reader->isEmpty($line)) {
         $result = $augmentor->augment($line);
 
         if (!$header_written) {

@@ -126,7 +126,7 @@ try {
     // Empty lines are frequently generated when exporting data from a spreadsheet.
     // They will appear as somethig like ;;;;;; in the export file (when ; is the delimiter).
 
-    // First, read the hader and create a VariablenameMapper from the names found
+    // First, read the header and create a VariablenameMapper from the names found
     // register the mapper as we did use it in the augmentation rules above
     $reader->readHeader();
     $mapper = new VariablenameMapper($reader->getHeader());

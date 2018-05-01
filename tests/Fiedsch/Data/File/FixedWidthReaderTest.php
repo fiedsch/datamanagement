@@ -62,7 +62,6 @@ class FixedWidthReaderTest extends TestCase
         while (($data = $this->reader->getLine(FixedWidthReader::SKIP_EMPTY_LINES)) !== null) {
             $lastLine = $data;
         }
-        var_dump($lastLine);
         Assert::assertEquals(['last','',''], $lastLine);
     }
 

@@ -113,6 +113,7 @@ class QuotaCell
                 }
             }
             $target[$key] = $value;
+            return;
         }
         $pointer = &$target;
         for ($i = 0; $i < count($key); $i++) {

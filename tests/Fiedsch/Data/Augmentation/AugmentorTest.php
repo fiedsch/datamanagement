@@ -7,6 +7,23 @@ use PHPUnit\Framework\TestCase;
 class AugmentorTest extends TestCase
 {
 
+  /**
+   * Mostly only an example of how to add a utility function with Pimple
+   */
+  public function testAddFunctionAugmentation()
+  {
+      $augmentor = new Augmentor();
+      $augmentor['delim'] = '|';
+
+      $augmentor['func'] = function($c) {
+        return function($value) use ($c) {
+          return $c['delim'].strtoupper($value).$c['delim'];
+        };
+      };
+      $this->assertEquals('|FOO|', $augmentor['func']('foo'));
+      $this->assertEquals('|BAR|', $augmentor['func']('bar'));
+    }
+
     /**
      * Test basic data augmentation
      */

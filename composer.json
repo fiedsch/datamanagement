@@ -22,6 +22,7 @@
   },
   "require": {
     "php": ">=5.6",
+    "ext-mbstring": "*",
     "pimple/pimple": "~3.0"
   },
   "autoload": {

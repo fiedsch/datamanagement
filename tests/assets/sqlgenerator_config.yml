@@ -1,0 +1,15 @@
+
+# Name der Datenbanktabelle
+table: testtable
+
+# Spaltentypen
+types:
+  default: DOUBLE
+  string: VARCHAR(256)
+  integer: INTEGER
+
+# Mapping Spaltenname (hier immer lowercase angegeben!) zu SQL-Typ
+columns:
+    id: integer
+    name: string
+    # column age not specified so we expect it to be types.default

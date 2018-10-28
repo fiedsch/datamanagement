@@ -127,11 +127,16 @@ class SqlCodeGenerator
     }
 
     /**
+     * @param boolean $addColumnNamesList Add the list of column names extracted from the file header
      * @return string
      */
-    public function getInsertStatements()
+    public function getInsertStatements($addColumnNamesList = false)
     {
         $result = [];
+        $columnNamesList = '';
+        if ($addColumnNamesList) {
+            $columnNamesList = ' ('.implode(',', array_map(function($entry) { return self::quoteIdentifier($entry); }, $this->reader->getHeader())) .')';
+        }
         while (($line = $this->reader->getLine(Reader::SKIP_EMPTY_LINES)) !== null) {
             $colValues = [];
             foreach ($line as $col) {

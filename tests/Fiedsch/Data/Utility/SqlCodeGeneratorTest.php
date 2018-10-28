@@ -1,10 +1,10 @@
 <?php
 
-use Fiedsch\Data\Utility\SqlGenerator;
+use Fiedsch\Data\Utility\SqlCodeGenerator;
 use Symfony\Component\Yaml\Yaml;
 use PHPUnit\Framework\TestCase;
 
-class SqlGeneratorTest extends TestCase
+class SqlCodeGeneratorTest extends TestCase
 {
 
     /**
@@ -18,14 +18,14 @@ class SqlGeneratorTest extends TestCase
     protected $configfile = 'tests/assets/sqlgenerator_config.yml';
 
     /**
-     * @var SqlGenerator;
+     * @var SqlCodeGenerator;
      */
     protected $generator;
 
     protected function setUp()
     {
         $config = Yaml::parse(file_get_contents($this->configfile));
-        $this->generator = new SqlGenerator($this->inputfile, $config);
+        $this->generator = new SqlCodeGenerator($this->inputfile, $config);
     }
 
     protected function tearDown()
@@ -35,13 +35,13 @@ class SqlGeneratorTest extends TestCase
 
     public function testCanBeInstatiated()
     {
-        $this->assertInstanceOf(SqlGenerator::class, $this->generator);
+        $this->assertInstanceOf(SqlCodeGenerator::class, $this->generator);
     }
 
     public function testInvalidConfigThrowsException()
     {
         $this->expectException('RuntimeException');
-        new SqlGenerator($this->inputfile, []);
+        new SqlCodeGenerator($this->inputfile, []);
     }
 
     public function testGetDropTable()
@@ -64,12 +64,12 @@ class SqlGeneratorTest extends TestCase
 
     public function  testQuoteValue()
     {
-        $this->assertEquals(SqlGenerator::quoteValue(null), "NULL");
-        $this->assertEquals(SqlGenerator::quoteValue(''), "NULL");
-        $this->assertEquals(SqlGenerator::quoteValue(1), "1");
-        $this->assertEquals(SqlGenerator::quoteValue(1.5), "1.5");
-        $this->assertEquals(SqlGenerator::quoteValue('x'), "'x'");
-        $this->assertEquals(SqlGenerator::quoteValue('O\'Shea'), "'O''Shea'");
+        $this->assertEquals(SqlCodeGenerator::quoteValue(null), "NULL");
+        $this->assertEquals(SqlCodeGenerator::quoteValue(''), "NULL");
+        $this->assertEquals(SqlCodeGenerator::quoteValue(1), "1");
+        $this->assertEquals(SqlCodeGenerator::quoteValue(1.5), "1.5");
+        $this->assertEquals(SqlCodeGenerator::quoteValue('x'), "'x'");
+        $this->assertEquals(SqlCodeGenerator::quoteValue('O\'Shea'), "'O''Shea'");
     }
 
 }

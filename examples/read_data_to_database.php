@@ -2,7 +2,7 @@
 
 require __DIR__ . '/../vendor/autoload.php';
 
-use Fiedsch\Data\Utility\SqlGenerator;
+use Fiedsch\Data\Utility\SqlCodeGenerator;
 // use Symfony\Component\Yaml\Yaml;
 
 $inputfile = './assets/testdata.csv';
@@ -25,7 +25,7 @@ $config = [
 // or read from YAML file
 //$config = Yaml::parse(file_get_contents($configfile));
 
-$generator = new SqlGenerator($inputfile, $config);
+$generator = new SqlCodeGenerator($inputfile, $config);
 print $generator->getDropTable();
 print $generator->getCreateTable();
 print $generator->getInsertStatements();

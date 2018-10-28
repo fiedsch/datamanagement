@@ -22,7 +22,7 @@ use Fiedsch\Data\File\CsvReader;
  * An alternative would be to use the mysqldump with the --tab option -- see
  * https://dev.mysql.com/doc/refman/8.0/en/reloading-delimited-text-dumps.html
  */
-class SqlGenerator
+class SqlCodeGenerator
 {
     /**
      * @var array
@@ -40,7 +40,7 @@ class SqlGenerator
     protected $reader;
 
     /**
-     * SqlGenerator constructor.
+     * SqlCodeGenerator constructor.
      *
      * @param string $inputFile
      * @param array $config

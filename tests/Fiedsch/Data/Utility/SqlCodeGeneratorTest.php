@@ -58,7 +58,7 @@ class SqlCodeGeneratorTest extends TestCase
 
     public function testInsertStatements()
     {
-        $expectedSql = "INSERT INTO `testtable` VALUES (2,'Andreas',52),(3,'Fiedsch',NULL),(5,'John Doe',25);";
+        $expectedSql = "INSERT INTO `testtable` VALUES (2,'Andreas',52),(3,'Fiedsch',NULL),(5,'John O''Doe',25);";
         $this->assertEquals($expectedSql, $this->generator->getInsertStatements());
     }
 

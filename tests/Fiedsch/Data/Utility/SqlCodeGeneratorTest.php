@@ -72,4 +72,21 @@ class SqlCodeGeneratorTest extends TestCase
         $this->assertEquals(SqlCodeGenerator::quoteValue('O\'Shea'), "'O''Shea'");
     }
 
+
+    public function  testQuoteNullIdentifier()
+    {
+        $this->expectException('TypeError');
+        SqlCodeGenerator::quoteIdentifier(null);
+    }
+
+    public function  testQuoteEmptyIdentifier()
+    {
+        $this->expectException('RuntimeException');
+        SqlCodeGenerator::quoteIdentifier('');
+    }
+
+    public function  testQuoteIdentifier()
+    {
+        $this->assertEquals(SqlCodeGenerator::quoteIdentifier('foo'), '`foo`');
+    }
 }

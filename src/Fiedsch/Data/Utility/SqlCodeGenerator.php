@@ -83,7 +83,7 @@ class SqlCodeGenerator
      * @return string
      */
     public function getDropTable() {
-        return sprintf('DROP TABLE IF EXISTS `%s`;', $this->config['table']);
+        return sprintf('DROP TABLE IF EXISTS %s;', self::quoteIdentifier($this->config['table']));
     }
 
 
@@ -150,7 +150,7 @@ class SqlCodeGenerator
         // See e.g. https://www.sqlite.org/lang_keywords.html
         // or https://dev.mysql.com/doc/refman/5.7/en/identifiers.html
         /* for 'INSERT' not inside sprintf() see comment in getCreateTable() */
-        return 'INSERT'.sprintf(' INTO `%s` VALUES ', $this->config['table']) . implode(',', $result) . ';';
+        return 'INSERT'.sprintf(' INTO %s%s VALUES %s;', self::quoteIdentifier($this->config['table']), $columnNamesList, implode(',', $result));
     }
 
     /**
@@ -167,4 +167,18 @@ class SqlCodeGenerator
         return sprintf("'%s'", str_replace("'", "''", $value));
     }
 
+    /**
+     * Quote an identifier (implementation currently only for MySQL)
+     * See e.g. https://www.sqlite.org/lang_keywords.html
+     * or https://dev.mysql.com/doc/refman/5.7/en/identifiers.html
+     *
+     * @param string $name
+     * @return string
+     * @throws \RuntimeException
+     */
+    public static function quoteIdentifier(string $name)
+    {
+        if ('' === $name || null === $name) { throw new \RuntimeException('parameter must not be emty'); }
+        return sprintf('`%s`', $name);
+    }
 }

@@ -72,7 +72,13 @@ class SqlCodeGeneratorTest extends TestCase
         $this->assertEquals(SqlCodeGenerator::quoteValue(null), "NULL");
         $this->assertEquals(SqlCodeGenerator::quoteValue(''), "NULL");
         $this->assertEquals(SqlCodeGenerator::quoteValue(1), "1");
+        $this->assertEquals(SqlCodeGenerator::quoteValue('1'), "1");
         $this->assertEquals(SqlCodeGenerator::quoteValue(1.5), "1.5");
+        $this->assertEquals(SqlCodeGenerator::quoteValue('1.5'), "1.5");
+        $this->assertSame(SqlCodeGenerator::quoteValue('1.5e1'), '1.5e1');
+        $this->assertNotSame(SqlCodeGenerator::quoteValue('1.5e1'), 1.5e1);
+        $this->assertNotSame(SqlCodeGenerator::quoteValue('1.5e1'), 15);
+        $this->assertSame(SqlCodeGenerator::quoteValue(1.5e1), 15.0);
         $this->assertEquals(SqlCodeGenerator::quoteValue('x'), "'x'");
         $this->assertEquals(SqlCodeGenerator::quoteValue('O\'Shea'), "'O''Shea'");
     }

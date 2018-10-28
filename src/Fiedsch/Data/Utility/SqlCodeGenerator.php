@@ -151,9 +151,7 @@ class SqlCodeGenerator
             $row .= ')';
             $result[] = $row;
         }
-        // TODO: as `name` is MySQL specific, so  we need a generic quoteIdentifier() method
-        // See e.g. https://www.sqlite.org/lang_keywords.html
-        // or https://dev.mysql.com/doc/refman/5.7/en/identifiers.html
+
         /* for 'INSERT' not inside sprintf() see comment in getCreateTable() */
         return 'INSERT'.sprintf(' INTO %s%s VALUES %s;', self::quoteIdentifier($this->config['table']), $columnNamesList, implode(',', $result));
     }
@@ -161,7 +159,7 @@ class SqlCodeGenerator
     /**
      * Quote a value (if needed) so it can be used in a SQL statement
      *
-     * @param string $value string representation of the value (typically read from file)
+     * @param string|number $value the value (typically read from file, then always a string)
      * @return string
      */
     public static function quoteValue($value)

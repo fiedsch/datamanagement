@@ -19,7 +19,7 @@ use Fiedsch\Data\File\CsvReader;
  * Currently supports only MySQL!
  *
  * Can be used to create a *.sql file much like mysqldump would do.
- * An alternative would be to use the mysqldump with the --tab option -- see
+ * An alternative would be to use the mysqldump with the <code>--tab option</code> -- see
  * https://dev.mysql.com/doc/refman/8.0/en/reloading-delimited-text-dumps.html
  */
 class SqlCodeGenerator

@@ -8,6 +8,19 @@ class AugmentorTest extends TestCase
 {
 
   /**
+   * Regeln sollen in der Reihenfolge des Hinzufügens aufgerufen werden
+   */
+  public function testRulesAreCalledInOrder()
+  {
+    $augmentor = new Augmentor();
+    $augmentor->addRule('aaa', function(Augmentor $augmentor, array $data) { return ['one'=>1]; });
+    $augmentor->addRule('ccc', function(Augmentor $augmentor, array $data) { return ['two'=>2]; });
+    $augmentor->addRule('bbb', function(Augmentor $augmentor, array $data) { return ['three'=>3]; });
+
+    $this->assertEquals(json_encode(['one'=>1, 'two'=>2, 'three'=>3]), json_encode($augmentor->augment([])));
+  }
+
+  /**
    * Mostly only an example of how to add a utility function with Pimple
    */
   public function testAddFunctionAugmentation()

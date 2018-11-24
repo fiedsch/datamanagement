@@ -102,8 +102,6 @@ class AugmentorTest extends TestCase
         $augmentor->setRequiredColumns(['one', 'two', 'three']);
         $augmentor->setColumnOutputOrder(['one', 'three', 'drei']);
 
-        print_r(array_diff($augmentor->getRequiredColumns(), $augmentor->getColumnOutputOrder()));
-
         $this->expectException(\RuntimeException::class);
         $augmentor->augment([]);
     }

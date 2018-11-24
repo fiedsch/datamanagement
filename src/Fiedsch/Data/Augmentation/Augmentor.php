@@ -31,7 +31,9 @@ class Augmentor extends Container
 
     const KEY_AUGMENTED = 'augmented';
 
-    const KEY_COLNAMES = 'required_columns';
+    const KEY_REQUIRED_COLNAMES = 'required_columns';
+
+    const KEY_COLOUMN_ORDER = 'column_order';
 
     /**
      * Constructor
@@ -69,15 +71,10 @@ class Augmentor extends Container
             $this[self::KEY_AUGMENTED] = array_merge($this[self::KEY_AUGMENTED], $augmentation_step);
         }
         $this->checkAugmented();
-        if ($this->hasRequiredColumnsSpecification()) {
-            // Check if we have data for columns not specified in $this[self::KEY_COLNAMES]
-            $augmented_keys = array_keys($this[self::KEY_AUGMENTED]);
-            $redundant_keys = array_diff($augmented_keys, $this[self::KEY_COLNAMES]);
-            if (!empty($redundant_keys)) {
-                throw new \RuntimeException("found keys not specified as required field: " . json_encode(array_values($redundant_keys)));
-            }
+
+        if ($this->hasColumnOrderSpecification()) {
             $result = [];
-            foreach ($this[self::KEY_COLNAMES] as $key) {
+            foreach ($this[self::KEY_COLOUMN_ORDER] as $key) {
                 $result[$key] = $this[self::KEY_AUGMENTED][$key];
             }
             return $result;
@@ -89,25 +86,56 @@ class Augmentor extends Container
     /**
      * Check if all of the required columns (fields) have been set during the augmentaion steps.
      * Throw an exception if a column is missing.
+     * Also check if additional columns (not specified in the required columns) are present.
+     * This will also throw an exception.
+     *
+     * @throws \RuntimeException
      */
     protected function checkAugmented()
     {
         if ($this->hasRequiredColumnsSpecification()) {
-            foreach ($this[self::KEY_COLNAMES] as $key) {
+            foreach ($this[self::KEY_REQUIRED_COLNAMES] as $key) {
                 if (!array_key_exists($key, $this[self::KEY_AUGMENTED])) {
                     throw new \RuntimeException("required column '$key' does not exist in augmented data'");
                 }
+            }
+            // Additionally check if we have data for columns not specified in $this[self::KEY_REQUIRED_COLNAMES]
+            $key_mismatch = array_diff(array_keys($this[self::KEY_AUGMENTED]), $this[self::KEY_REQUIRED_COLNAMES]);
+            if (!empty($key_mismatch)) {
+                throw new \RuntimeException("found keys not specified as required field: " . json_encode(array_values($key_mismatch)));
+            }
+        }
+
+        if ($this->hasColumnOrderSpecification()) {
+            // Side effect(?): specifying column order has the same effect as setting required columns (see above).
+            foreach ($this[self::KEY_COLOUMN_ORDER] as $key) {
+                if (!array_key_exists($key, $this[self::KEY_AUGMENTED])) {
+                    throw new \RuntimeException("required column '$key' does not exist in augmented data'");
+                }
+            }
+            // Check if we have data for columns not specified in $this[self::KEY_COLOUMN_ORDER]
+            $key_mismatch = array_diff(array_keys($this[self::KEY_AUGMENTED]), $this[self::KEY_COLOUMN_ORDER]);
+            if (!empty($key_mismatch)) {
+                throw new \RuntimeException("found keys not specified in column order: " . json_encode(array_values($key_mismatch)));
+            }
+        }
+
+        if ($this->hasRequiredColumnsSpecification() && $this->hasColumnOrderSpecification()) {
+            // check if bot specifications do not contradict
+            if (array_diff($this[self::KEY_COLOUMN_ORDER], $this[self::KEY_REQUIRED_COLNAMES])) {
+                throw new \RuntimeException("specification mismatch required columns and column order do not match");
             }
         }
     }
 
     /**
-     * @param array $colnames the names of the columns that have to be set during the
-     *   augmentation steps.
+     * Specify column names that have to be present (as array keys) in the augmentation result.
+     *
+     * @param array $colnames the names of the columns that have to be set during the augmentation steps.
      */
     public function setRequiredColumns(array $colnames)
     {
-        $this[self::KEY_COLNAMES] = $colnames;
+        $this[self::KEY_REQUIRED_COLNAMES] = $colnames;
     }
 
     /**
@@ -115,7 +143,29 @@ class Augmentor extends Container
      */
     public function getRequiredColumns()
     {
-        return $this[self::KEY_COLNAMES];
+        return $this[self::KEY_REQUIRED_COLNAMES];
+    }
+
+    /**
+     * Set the order in which the generated columns will be "output" (order of
+     * the keys in the augmented data array).
+     *
+     * Also makes sure, all specified columns are present in the augmentation result.
+     * Hence, if you use setColumnOutputOrder() you can omit setRequiredColumns().
+     *
+     * @param array $colnames determines the order of the column output.
+     */
+    public function setColumnOutputOrder(array $colnames)
+    {
+        $this[self::KEY_COLOUMN_ORDER] = $colnames;
+    }
+
+    /**
+     * @return array
+     */
+    public function getColumnOutputOrder()
+    {
+        return $this[self::KEY_COLOUMN_ORDER];
     }
 
     /**
@@ -124,7 +174,16 @@ class Augmentor extends Container
      * @return boolean
      */
     public function hasRequiredColumnsSpecification() {
-        return $this->offsetExists(self::KEY_COLNAMES) && is_array($this[self::KEY_COLNAMES]);
+        return $this->offsetExists(self::KEY_REQUIRED_COLNAMES) && is_array($this[self::KEY_REQUIRED_COLNAMES]);
+    }
+
+    /**
+     * Do we have the a specification for the order in which the generated columns have to be output?
+     *
+     * @return boolean
+     */
+    public function hasColumnOrderSpecification() {
+        return $this->offsetExists(self::KEY_COLOUMN_ORDER) && is_array($this[self::KEY_COLOUMN_ORDER]);
     }
 
     /**

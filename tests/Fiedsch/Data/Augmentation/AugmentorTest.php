@@ -1,4 +1,4 @@
-<?php
+<?php /** @noinspection PhpUnusedParameterInspection */
 
 use Fiedsch\Data\Augmentation\Augmentor;
 use PHPUnit\Framework\TestCase;
@@ -6,37 +6,107 @@ use PHPUnit\Framework\TestCase;
 
 class AugmentorTest extends TestCase
 {
+    /**
+     * Mostly only an example of how to add a utility function with Pimple
+     */
+    public function testAddFunctionAugmentation()
+    {
+        $augmentor = new Augmentor();
+        $augmentor['delim'] = '|';
 
-  /**
-   * Regeln sollen in der Reihenfolge des Hinzufügens aufgerufen werden
-   */
-  public function testRulesAreCalledInOrder()
-  {
-    $augmentor = new Augmentor();
-    $augmentor->addRule('aaa', function(Augmentor $augmentor, array $data) { return ['one'=>1]; });
-    $augmentor->addRule('ccc', function(Augmentor $augmentor, array $data) { return ['two'=>2]; });
-    $augmentor->addRule('bbb', function(Augmentor $augmentor, array $data) { return ['three'=>3]; });
-
-    $this->assertEquals(json_encode(['one'=>1, 'two'=>2, 'three'=>3]), json_encode($augmentor->augment([])));
-  }
-
-  /**
-   * Mostly only an example of how to add a utility function with Pimple
-   */
-  public function testAddFunctionAugmentation()
-  {
-      $augmentor = new Augmentor();
-      $augmentor['delim'] = '|';
-
-      $augmentor['func'] = function($c) {
-        return function($value) use ($c) {
-          return $c['delim'].strtoupper($value).$c['delim'];
+        $augmentor['func'] = function($c) {
+            return function($value) use ($c) {
+                return $c['delim'].strtoupper($value).$c['delim'];
+            };
         };
-      };
-      $this->assertEquals('|FOO|', $augmentor['func']('foo'));
-      $this->assertEquals('|BAR|', $augmentor['func']('bar'));
+        $this->assertEquals('|FOO|', $augmentor['func']('foo'));
+        $this->assertEquals('|BAR|', $augmentor['func']('bar'));
     }
 
+    /**
+     * Regeln sollen in der Reihenfolge des Hinzufügens aufgerufen werden
+     */
+    public function testRulesAreCalledInOrder()
+    {
+        $augmentor = new Augmentor();
+        $augmentor->addRule('aaa', function(Augmentor $augmentor, array $data) { return ['one' =>1]; });
+        $augmentor->addRule('ccc', function(Augmentor $augmentor, array $data) { return ['two'=>2]; });
+        $augmentor->addRule('bbb', function(Augmentor $augmentor, array $data) { return ['three'=>3]; });
+
+        $this->assertEquals(json_encode(['one'=>1, 'two'=>2, 'three'=>3]), json_encode($augmentor->augment([])));
+    }
+
+    /**
+     * Eine festgelegte Reihenfolge der Spalten bei der Ausgabe wird eingehalten
+     */
+    public function testColumnOrderSpecification()
+    {
+        $augmentor = new Augmentor();
+        $augmentor->addRule('aaa', function(Augmentor $augmentor, array $data) { return ['one'=>1]; });
+        $augmentor->addRule('ccc', function(Augmentor $augmentor, array $data) { return ['two'=>2]; });
+        $augmentor->addRule('bbb', function(Augmentor $augmentor, array $data) { return ['three'=>3]; });
+
+        $this->assertFalse($augmentor->hasColumnOrderSpecification());
+        $augmentor->setColumnOutputOrder(['one', 'three', 'two']);
+        $this->assertTrue($augmentor->hasColumnOrderSpecification());
+
+        $this->assertEquals(json_encode(['one'=>1, 'three'=>3, 'two'=>2]), json_encode($augmentor->augment([])));
+    }
+
+    /**
+     * Wenn wir die Ausgabereihenfolge festlegen, müssen wir alle dort angegebenen Spalten auch erzeugen
+     */
+    public function testColumnOrderSpecificationWithMissingColumn()
+    {
+        $augmentor = new Augmentor();
+        $augmentor->addRule('aaa', function(Augmentor $augmentor, array $data) { return ['one'=>1]; });
+        $augmentor->addRule('ccc', function(Augmentor $augmentor, array $data) { return ['two'=>2]; });
+
+        $this->assertFalse($augmentor->hasRequiredColumnsSpecification());
+        $augmentor->setColumnOutputOrder(['one', 'two', 'three']);
+        $this->expectException(\RuntimeException::class);
+        $this->expectExceptionMessage("does not exist in augmented data");
+        $augmentor->augment([]);
+    }
+
+    /**
+     * Wenn wir die Ausgabereihenfolge festlegen, müssen wir alle erzeiugten Spalten benennen.
+     */
+    public function testColumnOrderSpecificationWithExtraColumn()
+    {
+        $augmentor = new Augmentor();
+        $augmentor->addRule('aaa', function(Augmentor $augmentor, array $data) { return ['one'=>1]; });
+        $augmentor->addRule('bbb', function(Augmentor $augmentor, array $data) { return ['two'=>2]; });
+        $augmentor->addRule('ccc', function(Augmentor $augmentor, array $data) { return ['three'=>3]; });
+        $augmentor->addRule('ddd', function(Augmentor $augmentor, array $data) { return ['four'=>4]; });
+
+        $this->assertFalse($augmentor->hasRequiredColumnsSpecification());
+        $augmentor->setColumnOutputOrder(['one', 'two', 'three']);
+
+        $this->expectException(\RuntimeException::class);
+        $this->expectExceptionMessage("found keys not specified in column order");
+        $augmentor->augment([]);
+    }
+
+    /**
+     * Festgelegte Reihenfolge und benötigte Spalten müssen zusammenpassen
+     */
+    public function testColumnOrderAndRquiredColumnsSpecifications()
+    {
+        $augmentor = new Augmentor();
+        $augmentor->addRule('aaa', function(Augmentor $augmentor, array $data) { return ['one'=>1]; });
+        $augmentor->addRule('ccc', function(Augmentor $augmentor, array $data) { return ['two'=>2]; });
+        $augmentor->addRule('bbb', function(Augmentor $augmentor, array $data) { return ['three'=>3]; });
+        $augmentor->addRule('ddd', function(Augmentor $augmentor, array $data) { return ['drei'=>3]; });
+
+        $augmentor->setRequiredColumns(['one', 'two', 'three']);
+        $augmentor->setColumnOutputOrder(['one', 'three', 'drei']);
+
+        print_r(array_diff($augmentor->getRequiredColumns(), $augmentor->getColumnOutputOrder()));
+
+        $this->expectException(\RuntimeException::class);
+        $augmentor->augment([]);
+    }
     /**
      * Test basic data augmentation
      */
@@ -66,7 +136,6 @@ class AugmentorTest extends TestCase
         $this->assertEquals($result, ['bar' => 'FOO2', 'baz' => 'foo2']);
         $this->assertEquals($augmentor->getAugmentedSoFar(), ['bar' => 'FOO2', 'baz' => 'foo2']);
 
-        /*$result = */
         $augmentor->augment($data[2]);
         $this->assertEquals($augmentor->getAugmentedSoFar(), ['bar' => 'FOO3', 'baz' => 'foo3']);
 

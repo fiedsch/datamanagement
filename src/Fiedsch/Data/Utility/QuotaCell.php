@@ -104,7 +104,7 @@ class QuotaCell
      * @param boolean $force create entry in array if it did not exist yet
      * @throws \RuntimeException
      */
-    protected function setDeepArrayValue($key, &$target, $value, $force = false)
+    protected static function setDeepArrayValue($key, &$target, $value, $force = false)
     {
         if (!is_array($key)) {
             if (!isset($target[$key])) {
@@ -154,7 +154,7 @@ class QuotaCell
      */
     protected function setCount($key, $value, $force = false)
     {
-        $this->setDeepArrayValue($key, $this->counts, $value, $force);
+        self::setDeepArrayValue($key, $this->counts, $value, $force);
     }
 
     /**
@@ -164,7 +164,7 @@ class QuotaCell
      */
     protected function setTarget($key, $value, $force = false)
     {
-        $this->setDeepArrayValue($key, $this->targets, $value, $force);
+        self::setDeepArrayValue($key, $this->targets, $value, $force);
     }
 
     /**

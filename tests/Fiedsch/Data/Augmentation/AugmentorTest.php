@@ -24,7 +24,7 @@ class AugmentorTest extends TestCase
         };
         */
 
-        // or:
+        // or: (see https://pimple.symfony.com/#protecting-parameters)
 
         $augmentor['func'] = $augmentor->protect(function($value) use ($augmentor) {
             return $augmentor['delim'].strtoupper($value).$augmentor['delim'];

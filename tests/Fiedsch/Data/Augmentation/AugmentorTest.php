@@ -14,11 +14,22 @@ class AugmentorTest extends TestCase
         $augmentor = new Augmentor();
         $augmentor['delim'] = '|';
 
+        // two possible ways:
+
+        /*
         $augmentor['func'] = function($c) {
             return function($value) use ($c) {
                 return $c['delim'].strtoupper($value).$c['delim'];
             };
         };
+        */
+
+        // or:
+
+        $augmentor['func'] = $augmentor->protect(function($value) use ($augmentor) {
+            return $augmentor['delim'].strtoupper($value).$augmentor['delim'];
+        });
+
         $this->assertEquals('|FOO|', $augmentor['func']('foo'));
         $this->assertEquals('|BAR|', $augmentor['func']('bar'));
     }

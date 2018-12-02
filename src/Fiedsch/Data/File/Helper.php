@@ -92,12 +92,31 @@ class Helper
 
     /**
      * Map an array with numeric indices to an array with string keys
+     *
      * @param array $data
      * @param array $names
+     * @return array
      * @throws \RuntimeException
+     * @deprecated Use toNamedArray() instead
      */
     public static function setArrayKeys(array $data, array $names)
     {
+        @trigger_error("Deprecated. Use toNamedArray() instead.", E_USER_DEPRECATED);
+        return self::toNamedArray($data, $names);
+    }
+
+
+    /**
+     * Return an array with string keys generated from the input array with numerical keys
+     *
+     * @param array $data
+     * @param array $names
+     * @return array
+     * @throws \RuntimeException
+     */
+    public static function toNamedArray(array $data, array $names)
+    {
+        $tmp = [];
         if (count($data) !== count($names)) {
             throw new \RuntimeException("data and names lengths do not match");
         }

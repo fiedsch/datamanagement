@@ -32,6 +32,9 @@ class HelperTest extends TestCase
         $this->assertEquals(null, Helper::getBySC($data, 'xy'));
     }
 
+    /**
+     * @expectedDeprecation Deprecated. Use toNamedArray() instead.
+     */
     public function testSetArrayKeys() {
         $data = [1,2,3];
         $names = ['one', 'two', 'three'];
@@ -40,6 +43,17 @@ class HelperTest extends TestCase
 
         $this->expectException(\RuntimeException::class);
         $this->assertEquals($expected, Helper::setArrayKeys($data, ['one'=>1, 'two'=>2]));
+    }
+
+    public function testToNamedArray()
+    {
+        $data = [1,2,3];
+        $names = ['one', 'two', 'three'];
+        $expected = ['one'=>1, 'two'=>2, 'three'=>3];
+        $this->assertEquals($expected, Helper::toNamedArray($data, $names));
+
+        $this->expectException(\RuntimeException::class);
+        $this->assertEquals($expected, Helper::toNamedArray($data, ['one'=>1, 'two'=>2]));
     }
 
 }

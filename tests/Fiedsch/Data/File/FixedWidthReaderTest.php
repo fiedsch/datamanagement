@@ -1,5 +1,5 @@
 <?php
-use Fiedsch\Data\File\Reader;
+// use Fiedsch\Data\File\Reader;
 use Fiedsch\Data\File\FixedWidthReader;
 use PHPUnit\Framework\TestCase;
 use PHPUnit\Framework\Assert;
@@ -12,7 +12,7 @@ class FixedWidthReaderTest extends TestCase
     protected $filepath = 'tests/assets/data.fixed';
 
     /**
-     * @var fields
+     * @var array
      */
     protected $fields = [
         ['from'=>0,'to'=>5],

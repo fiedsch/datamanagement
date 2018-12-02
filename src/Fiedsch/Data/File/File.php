@@ -38,6 +38,10 @@ class File
      */
     protected $lineNumber;
 
+    /**
+     * @var resource
+     */
+    protected $handle;
 
     /**
      * @param string $filepath an absolute or relative path to a file. In case of a relative path

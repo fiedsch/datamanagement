@@ -136,7 +136,7 @@ resource consuming for large amounts of tokens:
 ```
 Check that the generated tokens are unique
 ```bash
-echo " both lines show the same numbers, there were no duplicate tokens
+echo " both lines show the same numbers, there were no duplicate tokens"
 wc -l mytokens.csv
 sort mytokens.csv | uniq | wc -l
 ```

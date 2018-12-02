@@ -48,7 +48,7 @@ class QuotaCell
      *
      * @param int $amount the amount to add
      * @param int|string|array $key the key.
-     * @param boolean $force set to true if $amount shall always added regardless
+     * @param boolean $force set to true if $amount shall always be added regardless
      *                       of exceeding the quota limit
      * @return boolean true if $amount could be added, false otherwise
      */
@@ -78,6 +78,7 @@ class QuotaCell
      * @param int|string|array $key
      * @param array $target the target array from which we try to get the value for the $key
      * @param null|int $default the value that will be returned if there is no entry for the $key
+     * @return int
      */
     protected function getDeepArrayValue($key, &$target, $default = null)
     {
@@ -100,7 +101,7 @@ class QuotaCell
     /**
      * @param int|string|array $key
      * @param array $target the target array from which we try to get the value for the $key
-     * @param null|int $default the value that will be returned if there is no entry for the $key
+     * @param int $value
      * @param boolean $force create entry in array if it did not exist yet
      * @throws \RuntimeException
      */
@@ -149,7 +150,8 @@ class QuotaCell
 
     /**
      * @param int|string|array $key
-     * @apram boolean $force
+     * @param int $value
+     * @param boolean $force
      * @throws \RuntimeException
      */
     protected function setCount($key, $value, $force = false)
@@ -159,7 +161,8 @@ class QuotaCell
 
     /**
      * @param int|string|array $key
-     * @apram boolean $force
+     * @param int $value
+     * @param boolean $force
      * @throws \RuntimeException
      */
     protected function setTarget($key, $value, $force = false)

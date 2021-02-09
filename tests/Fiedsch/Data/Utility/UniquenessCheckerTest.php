@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 use Fiedsch\Data\Utility\UniquenessChecker;
 use PHPUnit\Framework\TestCase;
 
@@ -9,7 +11,7 @@ class UniquenessCheckerTest extends TestCase
     /**
      * Test default comparison of values
      */
-    public function testDefault()
+    public function testDefault(): void
     {
         $checker = new UniquenessChecker();
         $value = 'Andreas Fieger';
@@ -22,7 +24,7 @@ class UniquenessCheckerTest extends TestCase
     /**
      * Test strict comparison of values
      */
-    public function testStrict()
+    public function testStrict(): void
     {
         $checker = new UniquenessChecker();
         $value = 'Andreas Fieger';
@@ -36,7 +38,7 @@ class UniquenessCheckerTest extends TestCase
     /**
      * Test different categories
      */
-    public function testCategories()
+    public function testCategories(): void
     {
         $checker = new UniquenessChecker();
         $value = 'Andreas Fieger';

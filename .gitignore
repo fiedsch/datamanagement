@@ -4,3 +4,5 @@ run.sh
 ideas.md
 composer.lock
 .idea/
+
+.phpunit.result.cache

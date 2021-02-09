@@ -1,12 +1,14 @@
 <?php
 
+declare(strict_types=1);
+
 use Fiedsch\Data\Utility\QuotaCell;
 use PHPUnit\Framework\TestCase;
 
 class QuotaCellTest extends TestCase
 {
 
-    public function testOnedimensionalArrayTarget()
+    public function testOnedimensionalArrayTarget(): void
     {
         $targets = ['x' => 10, 'y' => 20, 'z' => 30];
         $cell = new QuotaCell($targets);
@@ -21,14 +23,14 @@ class QuotaCellTest extends TestCase
         $this->assertEquals(5, $cell->getCount('x'));
     }
 
-    public function testUndefinedOffset()
+    public function testUndefinedOffset(): void
     {
         $targets = ['x' => 10, 'y' => 20, 'z' => 30];
         $cell = new QuotaCell($targets);
         $this->assertFalse($cell->add(5, 'a')); // index a is not defined, so we can't add to it
     }
 
-    public function testHasTarget()
+    public function testHasTarget(): void
     {
         $targets = ['42' => 10, '43' => 20, '44' => 12];
         $cell = new QuotaCell($targets);
@@ -38,7 +40,7 @@ class QuotaCellTest extends TestCase
         $this->assertFalse($cell->hasTarget('not in list'));
     }
 
-    public function testMultidimensionalTargets()
+    public function testMultidimensionalTargets(): void
     {
         $targets = [
             0 => 42,

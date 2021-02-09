@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 use Fiedsch\Data\File\CsvWriter;
 use Fiedsch\Data\File\CsvReader;
 use PHPUnit\Framework\TestCase;
@@ -24,7 +26,7 @@ class CsvWriterTest extends TestCase
     /**
      * setup for all tests
      */
-    protected function setUp()
+    protected function setUp(): void
     {
         $this->writer = new CsvWriter($this->filepath, $this->separator);
     }
@@ -32,7 +34,7 @@ class CsvWriterTest extends TestCase
     /**
      * clean up after all tests
      */
-    protected function tearDown()
+    protected function tearDown(): void
     {
         $this->writer->close();
         unlink($this->writer->getFilePath());
@@ -41,7 +43,7 @@ class CsvWriterTest extends TestCase
     /**
      * test line numbering
      */
-    public function testGetFilePath()
+    public function testGetFilePath(): void
     {
         $this->assertEquals(realpath($this->filepath), $this->writer->getFilePath());
     }
@@ -49,7 +51,7 @@ class CsvWriterTest extends TestCase
     /**
      *
      */
-    public function testDelimiter()
+    public function testDelimiter(): void
     {
         $this->assertEquals($this->separator, $this->writer->getDelimiter());
     }
@@ -58,7 +60,7 @@ class CsvWriterTest extends TestCase
      * in $this->setUp() we did not specify the enclosure character, so
      * we expect it to be the default which is <code>"</code>
      */
-    public function testEnclosure()
+    public function testEnclosure(): void
     {
         $this->assertEquals('"', $this->writer->getEnclosure());
     }
@@ -67,7 +69,7 @@ class CsvWriterTest extends TestCase
      * in $this->setUp() we did not specify the escape character, so
      * we expect it to be the default which is <code>\</code>
      */
-    public function testEscape()
+    public function testEscape(): void
     {
         $this->assertEquals('\\', $this->writer->getEscape());
     }
@@ -75,7 +77,7 @@ class CsvWriterTest extends TestCase
     /**
      * Test write to file and the read from that file
      */
-    public function testIO()
+    public function testIO(): void
     {
         $data = [1,2,'a'];
         $this->writer->printLine($data);

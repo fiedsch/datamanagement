@@ -1,4 +1,7 @@
 <?php
+
+declare(strict_types=1);
+
 use Fiedsch\Data\File\Reader;
 use Fiedsch\Data\File\CsvReader;
 use PHPUnit\Framework\TestCase;
@@ -25,7 +28,7 @@ class CsvReaderTest extends TestCase
     /**
      * setup for all tests
      */
-    protected function setUp()
+    protected function setUp(): void
     {
         $this->reader = new CsvReader($this->filepath, $this->separator);
     }
@@ -33,7 +36,7 @@ class CsvReaderTest extends TestCase
     /**
      * clean up after all tests
      */
-    protected function tearDown()
+    protected function tearDown(): void
     {
         $this->reader->close();
     }
@@ -41,7 +44,7 @@ class CsvReaderTest extends TestCase
     /**
      * test line numbering
      */
-    public function testLinenumbering()
+    public function testLinenumbering(): void
     {
         $i = 0;
         $this->assertEquals($i, $this->reader->getLineNumber());
@@ -53,7 +56,7 @@ class CsvReaderTest extends TestCase
     /**
      * Test skip empty lines
      */
-    public function testSkipEmptyLines()
+    public function testSkipEmptyLines(): void
     {
         $i = 0;
         while (($line = $this->reader->getLine(CsvReader::SKIP_EMPTY_LINES)) !== null) {
@@ -66,7 +69,7 @@ class CsvReaderTest extends TestCase
     /**
      * Test do not skip empty lines (default behaviour)
      */
-    public function testDoNotSkipEmptyLines()
+    public function testDoNotSkipEmptyLines(): void
     {
         $i = 0;
         while (($line = $this->reader->getLine()) !== null) {
@@ -79,7 +82,7 @@ class CsvReaderTest extends TestCase
     /**
      *
      */
-    public function testDelimiter()
+    public function testDelimiter(): void
     {
         $this->assertEquals($this->separator, $this->reader->getDelimiter());
     }
@@ -88,7 +91,7 @@ class CsvReaderTest extends TestCase
      * in $this->setUp() we did not specify the enclosure character, so
      * we expect it to be the default which is <code>"</code>
      */
-    public function testEnclosure()
+    public function testEnclosure(): void
     {
         $this->assertEquals('"', $this->reader->getEnclosure());
     }
@@ -97,7 +100,7 @@ class CsvReaderTest extends TestCase
      * in $this->setUp() we did not specify the escape character, so
      * we expect it to be the default which is <code>\</code>
      */
-    public function testEscape()
+    public function testEscape(): void
     {
         $this->assertEquals('\\', $this->reader->getEscape());
     }

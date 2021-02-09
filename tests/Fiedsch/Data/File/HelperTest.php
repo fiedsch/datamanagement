@@ -1,12 +1,14 @@
 <?php
 
+declare(strict_types=1);
+
 use Fiedsch\Data\File\Helper;
 use PHPUnit\Framework\TestCase;
 
 class HelperTest extends TestCase
 {
 
-    public function testSC()
+    public function testSC(): void
     {
         $data = str_split("abcdefghijklmnopqrstuvwxyz");
         foreach ($data as $i => $letter) {
@@ -17,7 +19,7 @@ class HelperTest extends TestCase
         $this->assertEquals(Helper::SC('ba'), Helper::SC('az')+1);
     }
 
-    public function testGetBySC()
+    public function testGetBySC(): void
     {
         $data = str_split("abcdefghijklmnopqrstuvwxyz");
         foreach ($data as $letter) {
@@ -35,7 +37,8 @@ class HelperTest extends TestCase
     /**
      * @expectedDeprecation Deprecated. Use toNamedArray() instead.
      */
-    public function testSetArrayKeys() {
+    public function testSetArrayKeys(): void
+    {
         $data = [1,2,3];
         $names = ['one', 'two', 'three'];
         $expected = ['one'=>1, 'two'=>2, 'three'=>3];
@@ -45,7 +48,7 @@ class HelperTest extends TestCase
         $this->assertEquals($expected, Helper::setArrayKeys($data, ['one'=>1, 'two'=>2]));
     }
 
-    public function testToNamedArray()
+    public function testToNamedArray(): void
     {
         $data = [1,2,3];
         $names = ['one', 'two', 'three'];

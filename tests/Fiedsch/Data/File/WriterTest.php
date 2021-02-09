@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 use Fiedsch\Data\File\Writer;
 use Fiedsch\Data\File\Reader;
 use PHPUnit\Framework\TestCase;
@@ -19,7 +21,7 @@ class WriterTest extends TestCase
     /**
      * setup for all tests
      */
-    protected function setUp()
+    protected function setUp(): void
     {
         $this->writer = new Writer($this->filepath);
     }
@@ -27,7 +29,7 @@ class WriterTest extends TestCase
     /**
      * clean up after all tests
      */
-    protected function tearDown()
+    protected function tearDown(): void
     {
         $this->writer->close();
         unlink($this->writer->getFilePath());
@@ -36,7 +38,7 @@ class WriterTest extends TestCase
     /**
      * test line numbering
      */
-    public function testGetFilePath()
+    public function testGetFilePath(): void
     {
         $this->assertEquals(realpath($this->filepath), $this->writer->getFilePath());
     }
@@ -44,7 +46,7 @@ class WriterTest extends TestCase
     /**
      * Test write to file and the read from that file
      */
-    public function testIO()
+    public function testIO(): void
     {
         $text = "a Text";
         $this->writer->printLine($text);

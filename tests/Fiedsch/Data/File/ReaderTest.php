@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 use Fiedsch\Data\File\Reader;
 use PHPUnit\Framework\TestCase;
 
@@ -19,7 +21,7 @@ class ReaderTest extends TestCase
     /**
      * setup for all tests
      */
-    protected function setUp()
+    protected function setUp(): void
     {
         $this->reader = new Reader($this->filepath);
     }
@@ -27,7 +29,7 @@ class ReaderTest extends TestCase
     /**
      * clean up after all tests
      */
-    protected function tearDown()
+    protected function tearDown(): void
     {
         $this->reader->close();
     }
@@ -35,7 +37,7 @@ class ReaderTest extends TestCase
     /**
      * test line numbering
      */
-    public function testLinenumbering()
+    public function testLinenumbering(): void
     {
         $i = 0;
         $this->assertEquals($i, $this->reader->getLineNumber());
@@ -47,7 +49,7 @@ class ReaderTest extends TestCase
     /**
      * Test skip empty lines
      */
-    public function testSkipEmptyLines()
+    public function testSkipEmptyLines(): void
     {
         $i = 0;
         while (($line = $this->reader->getLine(Reader::SKIP_EMPTY_LINES)) !== null) {
@@ -60,7 +62,7 @@ class ReaderTest extends TestCase
     /**
      * Test do not skip empty lines (default behaviour)
      */
-    public function testDoNotSkipEmptyLines()
+    public function testDoNotSkipEmptyLines(): void
     {
         $i = 0;
         while (($line = $this->reader->getLine()) !== null) {
@@ -74,11 +76,10 @@ class ReaderTest extends TestCase
      * Test accessing a non existant file.
      * An exception should be thrown.
      */
-    public function testNonExistant()
+    public function testNonExistant(): void
     {
         $this->expectException(RuntimeException::class);
         new Reader($this->filepath.'.does_not_exist');
     }
-
 
 }

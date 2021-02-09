@@ -1,5 +1,6 @@
 <?php /** @noinspection PhpUnusedParameterInspection */
 
+declare(strict_types=1);
 use Fiedsch\Data\Augmentation\Augmentor;
 use PHPUnit\Framework\TestCase;
 
@@ -9,7 +10,7 @@ class AugmentorTest extends TestCase
     /**
      * Mostly only an example of how to add a utility function with Pimple
      */
-    public function testAddFunctionAugmentation()
+    public function testAddFunctionAugmentation(): void
     {
         $augmentor = new Augmentor();
         $augmentor['delim'] = '|';
@@ -37,7 +38,7 @@ class AugmentorTest extends TestCase
     /**
      * Regeln sollen in der Reihenfolge des Hinzufügens aufgerufen werden
      */
-    public function testRulesAreCalledInOrder()
+    public function testRulesAreCalledInOrder(): void
     {
         $augmentor = new Augmentor();
         $augmentor->addRule('aaa', function(Augmentor $augmentor, array $data) { return ['one' =>1]; });
@@ -50,7 +51,7 @@ class AugmentorTest extends TestCase
     /**
      * Eine festgelegte Reihenfolge der Spalten bei der Ausgabe wird eingehalten
      */
-    public function testColumnOrderSpecification()
+    public function testColumnOrderSpecification(): void
     {
         $augmentor = new Augmentor();
         $augmentor->addRule('aaa', function(Augmentor $augmentor, array $data) { return ['one'=>1]; });
@@ -67,7 +68,7 @@ class AugmentorTest extends TestCase
     /**
      * Wenn wir die Ausgabereihenfolge festlegen, müssen wir alle dort angegebenen Spalten auch erzeugen
      */
-    public function testColumnOrderSpecificationWithMissingColumn()
+    public function testColumnOrderSpecificationWithMissingColumn(): void
     {
         $augmentor = new Augmentor();
         $augmentor->addRule('aaa', function(Augmentor $augmentor, array $data) { return ['one'=>1]; });
@@ -83,7 +84,7 @@ class AugmentorTest extends TestCase
     /**
      * Wenn wir die Ausgabereihenfolge festlegen, müssen wir alle erzeiugten Spalten benennen.
      */
-    public function testColumnOrderSpecificationWithExtraColumn()
+    public function testColumnOrderSpecificationWithExtraColumn(): void
     {
         $augmentor = new Augmentor();
         $augmentor->addRule('aaa', function(Augmentor $augmentor, array $data) { return ['one'=>1]; });
@@ -102,7 +103,7 @@ class AugmentorTest extends TestCase
     /**
      * Festgelegte Reihenfolge und benötigte Spalten müssen zusammenpassen
      */
-    public function testColumnOrderAndRquiredColumnsSpecifications()
+    public function testColumnOrderAndRquiredColumnsSpecifications(): void
     {
         $augmentor = new Augmentor();
         $augmentor->addRule('aaa', function(Augmentor $augmentor, array $data) { return ['one'=>1]; });
@@ -119,7 +120,7 @@ class AugmentorTest extends TestCase
     /**
      * Test basic data augmentation
      */
-    public function testAugmentation()
+    public function testAugmentation(): void
     {
         $augmentor = new Augmentor();
 
@@ -153,7 +154,7 @@ class AugmentorTest extends TestCase
     /**
      * with a fresh Augmentor $a $a['foo'] is not set
      */
-    public function testAppendToUnsetProperty()
+    public function testAppendToUnsetProperty(): void
     {
         $a = new Augmentor();
         $a->appendTo('foo', 1);
@@ -163,7 +164,7 @@ class AugmentorTest extends TestCase
     /**
      * append to a previously set array
      */
-    public function testAppendToExistingArrayProperty()
+    public function testAppendToExistingArrayProperty(): void
     {
         $a = new Augmentor();
         $a['foo'] = [1];
@@ -178,7 +179,7 @@ class AugmentorTest extends TestCase
      * append to a previously set scalar value. The property
      * should now be an array.
      */
-    public function testAppendToExistingScalarProperty()
+    public function testAppendToExistingScalarProperty(): void
     {
         $a = new Augmentor();
         $a['foo'] = 1;
@@ -190,7 +191,7 @@ class AugmentorTest extends TestCase
      * append to an array and overwrite the values of previously set array keys.
      * (i.e. do what array_merge() does).
      */
-    public function testAppendToWithArrayParameter()
+    public function testAppendToWithArrayParameter(): void
     {
 
         $a = new Augmentor();
@@ -213,7 +214,7 @@ class AugmentorTest extends TestCase
     /**
      *
      */
-    public function testRuleAlreadyExists()
+    public function testRuleAlreadyExists(): void
     {
         $this->expectException(RuntimeException::class);
         $a = new Augmentor();
@@ -225,7 +226,8 @@ class AugmentorTest extends TestCase
     /**
      *
      */
-    public function testHasRequiredColumnsSpecification() {
+    public function testHasRequiredColumnsSpecification(): void
+    {
         $a = new Augmentor();
         $this->assertFalse($a->hasRequiredColumnsSpecification());
         $a->setRequiredColumns(['a','b']);
@@ -236,7 +238,8 @@ class AugmentorTest extends TestCase
      * call to augment() with missing rule that produces 'b' has no effect
      * as long as setRequiredColumns() was not used.
      */
-    public function testWithoutRequiredColumnsSpecification() {
+    public function testWithoutRequiredColumnsSpecification(): void
+    {
         $a = new Augmentor();
         $a->addRule('foo', function(Augmentor $a) { return ['foo'=>42]; });
         $a->augment([]);
@@ -251,7 +254,8 @@ class AugmentorTest extends TestCase
      * call to augment() with missing rule that produces 'b' has to cause
      * an exception.
      */
-    public function testWithRequiredColumnsSpecificationMissingColumn() {
+    public function testWithRequiredColumnsSpecificationMissingColumn(): void
+    {
         $this->expectException(RuntimeException::class);
         $a = new Augmentor();
         $a->addRule('foo', function(Augmentor $a) { return ['a'=>42]; });
@@ -262,11 +266,11 @@ class AugmentorTest extends TestCase
     /**
      * call to augment() with rule that produces 'c' which is not specified
      * in setRequiredColumns() has to cause an exception.
-     *
-     * @expectedException RuntimeException
-     * @expectedExceptionMessage found keys not specified as required field: ["c"]
      */
-    public function testWithRequiredColumnsSpecificationExtraColumn() {
+    public function testWithRequiredColumnsSpecificationExtraColumn(): void
+    {
+        $this->expectException(RuntimeException::class);
+        $this->expectExceptionMessage('found keys not specified as required field: ["c"]');
         $a = new Augmentor();
         $a->addRule('foo', function(Augmentor $a) { return ['a'=>1,'b'=>2,'c'=>42]; });
         $a->setRequiredColumns(['a','b']);

@@ -2,7 +2,8 @@
 
 ## Development
 
-## Version 0.8.0
+
+## Version 1.0.0
 
 * `Data\File\CsvReader` now uses `League\Csv\Reader` internally.
   * we require the input file to have a header line

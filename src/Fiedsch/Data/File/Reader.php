@@ -60,7 +60,7 @@ class Reader extends File
      * @param int $mode (SKIP_EMPTY_LINES or RETURN_EVERY_LINE which is the default)
      * @return string|null the next line of the file or null if there are no more lines
      */
-    public function getLine($mode = self::RETURN_EVERY_LINE)
+    public function getLine($mode = Reader::RETURN_EVERY_LINE)
     {
         if ($this->handle) {
             $line = fgets($this->handle);
@@ -69,7 +69,7 @@ class Reader extends File
                 return null;
             }
             ++$this->lineNumber;
-            if ($mode === self::SKIP_EMPTY_LINES && self::isEmpty($line)) {
+            if ($mode === Reader::SKIP_EMPTY_LINES && self::isEmpty($line)) {
                 return self::getLine($mode);
             }
             return rtrim($line, "\r\n");

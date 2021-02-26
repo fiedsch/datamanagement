@@ -11,7 +11,6 @@ use Fiedsch\Data\Augmentation\Rules\TokenRule;
 use Fiedsch\Data\File\CsvReader;
 use Fiedsch\Data\File\CsvWriter;
 use Fiedsch\Data\File\Helper;
-use Fiedsch\Data\File\Reader;
 use Fiedsch\Data\Utility\TokenCreator;
 use Fiedsch\Data\Utility\VariablenameMapper;
 
@@ -53,7 +52,7 @@ try {
             'token.case'   => TokenCreator::MIXED,
             'token.length' => 5 // lower the "minimum required length" as shorter tokens
             // will be read read from a file below. (12 === TokenCreator::DEFAULT_LENGTH)
-            // If we do not do the we will get an error (\LogicException):
+            // If we do not do that, we will get an error (\LogicException):
             // "tokens read from file are too short (current length setting is '12')."
         ]
     );
@@ -126,9 +125,9 @@ try {
     // Empty lines are frequently generated when exporting data from a spreadsheet.
     // They will appear as somethig like ;;;;;; in the export file (when ; is the delimiter).
 
-    // First, read the header and create a VariablenameMapper from the names found
+    // The header is automatically scanned and we use it to create a VariablenameMapper from
+    // the names found in it.
     // register the mapper as we did use it in the augmentation rules above
-    $reader->readHeader();
     $mapper = new VariablenameMapper($reader->getHeader());
     $augmentor['mapper'] = $mapper;
 
@@ -136,19 +135,20 @@ try {
     // and write new header (augmented columns plus original columsn)
 
     $header_written = false;
+    $total_lines = 0;
 
-    while (($line = $reader->getLine(Reader::SKIP_EMPTY_LINES)) !== null) {
+    // $reader->readHeader(); // deprecated as we no longer need it
+
+    while (($line = $reader->getLine(CsvReader::SKIP_EMPTY_LINES)) !== null) {
+        $input_line = $reader->getLineNumber();
         $result = $augmentor->augment($line);
-
         if (!$header_written) {
-            $writer->printLine(array_merge(['input_line'], array_keys($result), $reader->getHeader()));
+            $writer->printLine(array_merge(['line_count_non_empty', 'input_line'], array_keys($result), $reader->getHeader()));
             $header_written = true;
         }
-        $writer->printLine(array_merge([$reader->getLineNumber()], $result, $line));
-        //}
+        $writer->printLine(array_merge([++$total_lines, $input_line], $result, $line));
     }
 
-    // $reader->close(); // not needed as it will be automatically called when there are no more lines
     $writer->close();
 
     // Summary of the data augmentation
@@ -161,6 +161,6 @@ try {
 
     print "done\n";
 } catch (Exception $e) {
-    print $e->getMessage() . "\n";
+    print "\n\n".$e->getMessage() . "\n\n";
     exit(1);
 }

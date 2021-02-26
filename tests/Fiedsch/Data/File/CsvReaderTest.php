@@ -38,7 +38,7 @@ class CsvReaderTest extends TestCase
      */
     protected function tearDown(): void
     {
-        $this->reader->close();
+        // $this->reader->close();
     }
 
     /**
@@ -49,7 +49,7 @@ class CsvReaderTest extends TestCase
         $i = 0;
         $this->assertEquals($i, $this->reader->getLineNumber());
         while (($line = $this->reader->getLine(Reader::RETURN_EVERY_LINE)) !== null) {
-                $this->assertEquals(++$i, $this->reader->getLineNumber());
+            $this->assertEquals(++$i, $this->reader->getLineNumber());
         }
     }
 
@@ -62,8 +62,8 @@ class CsvReaderTest extends TestCase
         while (($line = $this->reader->getLine(CsvReader::SKIP_EMPTY_LINES)) !== null) {
             ++$i;
         }
-        $this->assertEquals(4, $i);
-        $this->assertEquals(5, $this->reader->getLineNumber());
+        $this->assertEquals(3, $i); // drei nichtleere Zeilen gelesen
+        $this->assertEquals(4, $this->reader->getLineNumber()); // inkl. Leerzeile haben wir 4 Zeilen verarbeitet
     }
 
     /**
@@ -75,8 +75,8 @@ class CsvReaderTest extends TestCase
         while (($line = $this->reader->getLine()) !== null) {
             ++$i;
         }
-        $this->assertEquals(5, $i);
-        $this->assertEquals(5, $this->reader->getLineNumber());
+        $this->assertEquals(4, $i);
+        $this->assertEquals(4, $this->reader->getLineNumber());
     }
 
     /**
@@ -105,16 +105,40 @@ class CsvReaderTest extends TestCase
         $this->assertEquals('\\', $this->reader->getEscape());
     }
 
-    /**
-     * (visual debug) not really a test ...
-     */
-    /*
-    public function testDisplayData()
+    public function testGetHeader(): void
     {
-        //while (($line = $this->reader->getLine(CsvReader::SKIP_EMPTY_LINES)) !== null) {
-        while (($line = $this->reader->getLine(CsvReader::RETURN_EVERY_LINE)) !== null) {
-            print_r($line);
-        }
+        $this->assertSame(['id', 'name', 'age'], $this->reader->getHeader());
     }
-    */
+
+    public function testDataWithLinebreaks(): void
+    {
+        $this->filepath = str_replace('.csv', '_with_linebreaks.csv', $this->filepath);
+        $this->reader = new CsvReader($this->filepath, $this->separator);
+
+        $expectedNamesInLines = [
+                ['line' => 1, 'name' => "Andreas\nFieger\n"],
+                ['line' => 2, 'name' => "Fiedsch"],
+                ['line' => 4, 'name' => "John\nDoe"],
+        ];
+
+        $i = 0;
+        while (($line = $this->reader->getLine(CsvReader::SKIP_EMPTY_LINES)) !== null) {
+            $this->assertEquals($expectedNamesInLines[$i]['line'], $this->reader->getLineNumber());
+            $this->assertEquals($expectedNamesInLines[$i]['line'], $line[0]);
+            $this->assertEquals($expectedNamesInLines[$i]['name'], $line[1]);
+            ++$i;
+        }
+        $this->assertEquals(3, $i); // drei nichtleere Zeilen gelesen
+        $this->assertEquals(4, $this->reader->getLineNumber()); // inkl. Leerzeile haben wir 4 Zeilen verarbeitet
+    }
+
+    public function testGetReader(): void
+    {
+        $this->assertInstanceOf(\League\Csv\Reader::class, $this->reader->getReader());
+    }
+
+    // public function testReadHeaderIsDeprecated(): void
+    // {
+    //     $this->reader->readHeader();
+    // }
 }

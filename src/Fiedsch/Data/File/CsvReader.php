@@ -1,4 +1,7 @@
 <?php
+
+declare(strict_types=1);
+
 /**
  * @package    Datamanagement
  * @author     Andreas Fieger <fiedsch@ja-eh.at>
@@ -9,43 +12,38 @@
 
 namespace Fiedsch\Data\File;
 
+use League\Csv\Reader as LeagueCsvReader;
+use League\Csv\Statement;
+
 /**
  * Class CsvReader
  * @package Fiedsch\Data
  *
- * Read a CSV file line by line and return an array of data per line.
+ * Read a CSV file and return an array of data per data line.
  *
  * Files are assumed to be encoded utf-8 with LF line endings.
- * @see FileReader for more information.
- *
- * If you need a more sophisticated CSV-reader, maybe
- * https://github.com/parsecsv/parsecsv-for-php can help you.
+ * Files are assumed to have a header row as the first data line.
  */
 
-class CsvReader extends Reader
+class CsvReader
 {
+    const RETURN_EVERY_LINE = Reader::RETURN_EVERY_LINE;
+    const SKIP_EMPTY_LINES = Reader::SKIP_EMPTY_LINES;
 
     /**
-     * @var string the delimiter that separates columns in the file.
+     * @var int
      */
-    protected $delimiter;
+    protected $lineNumber;
 
     /**
-     * @var string the character that is used to enclose column values
-     * that might contain the delimiter as part of their value.
+     * @var LeagueCsvReader
      */
-    protected $enclosure;
+    protected $csvReader;
 
     /**
-     * @var string the character used for escaping.
+     * @var \Iterator
      */
-    protected $escape;
-
-    /**
-     * @var array the file might contain a header (column names) in its first row.
-     */
-    private $header;
-
+    protected $csvRecordsIterator;
 
     /**
      * Constructor.
@@ -61,13 +59,17 @@ class CsvReader extends Reader
      *
      * For `$delimiter`, `$enclosure`, and `$escape` see also http://php.net/manual/en/function.str-getcsv.php.
      */
-    public function __construct($filepath, $delimiter, $enclosure = '"', $escape = "\\")
+    public function __construct(string $filepath, string $delimiter, string $enclosure = '"', string $escape = "\\")
     {
-        parent::__construct($filepath);
-        $this->delimiter = $delimiter;
-        $this->enclosure = $enclosure;
-        $this->escape = $escape;
-        $this->header = null;
+        $this->csvReader = LeagueCsvReader::createFromPath($filepath, 'r');
+        $this->csvReader->setDelimiter($delimiter);
+        $this->csvReader->setEnclosure($enclosure);
+        $this->csvReader->setEscape($escape);
+        $this->csvReader->setHeaderOffset(0);
+        $result = Statement::create()->process($this->csvReader);
+        $this->csvRecordsIterator = $result->getRecords();
+        $this->header = $this->csvReader->getHeader();
+        $this->lineNumber = 0;
     }
 
     /**
@@ -77,7 +79,7 @@ class CsvReader extends Reader
      */
     public function getDelimiter()
     {
-        return $this->delimiter;
+        return $this->csvReader->getDelimiter();
     }
 
     /**
@@ -87,7 +89,7 @@ class CsvReader extends Reader
      */
     public function getEnclosure()
     {
-        return $this->enclosure;
+        return $this->csvReader->getEnclosure();
     }
 
     /**
@@ -97,21 +99,30 @@ class CsvReader extends Reader
      */
     public function getEscape()
     {
-        return $this->escape;
+        return $this->csvReader->getEscape();
+    }
+
+    public function getReader(): LeagueCsvReader
+    {
+        return $this->csvReader;
     }
 
     /**
      * Read the first line of the file and use it as header (column names).
      *
-     * @throws \Exception if the current line is > 0, i.e. data was already read.
+     * @deprecated There is no need to call this method anymore as League\Csv\Reader automatically scans the header
      */
     public function readHeader()
     {
-        if ($this->lineNumber > 0) {
-            throw new \RuntimeException("can not read header when data was already read.");
-        }
+        @trigger_error('There is no need to call this method anymore as League\Csv\Reader automatically scans the header', \E_USER_DEPRECATED);
+    }
 
-        $this->header = $this->getLine();
+    /**
+     * @return int Zeilennummer, die gerade gelesen wurde
+     */
+    public function getLineNumber(): int
+    {
+        return $this->lineNumber;
     }
 
     /**
@@ -122,13 +133,17 @@ class CsvReader extends Reader
      */
     public function getLine($mode = self::RETURN_EVERY_LINE)
     {
-        $line = parent::getLine($mode);
-        if ($line === null) { return null; }
-        $parsed = str_getcsv($line, $this->delimiter, $this->enclosure, $this->escape);
-        if ($mode === self::SKIP_EMPTY_LINES && self::isEmpty($parsed)) {
+        $row = $this->csvRecordsIterator->current();
+        if (null === $row) {
+            return $row;
+        }
+        $this->csvRecordsIterator->next();
+        $this->lineNumber++;
+        if ($mode === self::SKIP_EMPTY_LINES && self::isEmpty($row, false)) {
             return $this->getLine($mode);
         }
-        return $parsed;
+
+        return array_values($row);
     }
 
     /**
@@ -146,19 +161,22 @@ class CsvReader extends Reader
      *
      * @param array $line the line to check.
      *
-     * @param boolean $strict controls how to compare "empty" strings (see also Reader::isEmpty()).
+     * @param boolean $strict controls how to compare "empty" strings (i.e. is ' ' empty or not).
      *
      * @return boolean
      */
-    public static function isEmpty($line, $strict = false)
+    public static function isEmpty(array $line, $strict = false)
     {
-        if (!is_array($line)) {
-            throw new \RuntimeException("got a string that should already have been split into an array");
-        }
         $test = array_filter($line, function ($element) use ($strict) {
-            return !Reader::isEmpty($element, $strict);
+            if (null === $element) {
+                $element = '';
+            }
+            if (!$strict) {
+                $element = trim($element);
+            }
+            return '' !== $element;
         });
-        return empty($test);
+        return count($test) === 0;
     }
 
 }

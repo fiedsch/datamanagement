@@ -79,6 +79,8 @@ class CsvWriterTest extends TestCase
      */
     public function testIO(): void
     {
+        $header = ['A','B','C'];
+        $this->writer->printLine($header);
         $data = [1,2,'a'];
         $this->writer->printLine($data);
 
@@ -87,8 +89,6 @@ class CsvWriterTest extends TestCase
         $this->assertEquals($data, $line);
 
         $this->assertNull($reader->getLine());
-
-        $reader->close();
     }
 
 }

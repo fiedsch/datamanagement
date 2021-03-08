@@ -265,4 +265,16 @@ class Augmentor extends Container
         $this[$key] = $old_value;
     }
 
+    /**
+     * Overwrite a previously augmented value
+     *
+     * @param $key
+     * @param $value
+     */
+    public function overwriteValue($key, $value) {
+        $augmented = $this[self::KEY_AUGMENTED];
+        $augmented[$key] = $value;
+        $this[self::KEY_AUGMENTED] = $augmented;
+    }
+
 }

@@ -3,6 +3,11 @@
 ## Development
 
 
+## Version 1.0.1
+
+* new helper function `overwriteValue($key, $value)`
+
+
 ## Version 1.0.0
 
 * `Data\File\CsvReader` now uses `League\Csv\Reader` internally.

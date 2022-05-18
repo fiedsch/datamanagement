@@ -58,7 +58,7 @@ class File
         // is $filepath a relative path? We are considering unix like systems only
         // and ignore things like "C:\".
         if (substr($filepath, 0, 1) !== DIRECTORY_SEPARATOR) {
-            $realpath = realpath(null) . DIRECTORY_SEPARATOR . $filepath;
+            $realpath = realpath('') . DIRECTORY_SEPARATOR . $filepath;
         }
 
         if (!$realpath) {

@@ -82,7 +82,7 @@ class File
         $this->handle = fopen($this->filepath, $mode);
 
         if (!$this->handle) {
-            throw new\RuntimeException("invalid file handle.");
+            throw new \RuntimeException("invalid file handle.");
         }
 
     }

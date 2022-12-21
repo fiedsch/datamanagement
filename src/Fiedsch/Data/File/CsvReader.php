@@ -45,6 +45,8 @@ class CsvReader
      */
     protected $csvRecordsIterator;
 
+    public array $header;
+
     /**
      * Constructor.
      *

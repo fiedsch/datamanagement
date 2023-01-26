@@ -33,17 +33,19 @@ try {
 
     $augmentor = new Augmentor();
 
-    // The optional argument passed to the constructor can be an array of column
+    // The optional argument passed to the constructor can be used to specify an array of column
     // names that we expect to be set in the augmantation steps. If the steps fail
     // to set these columns an exception will be thrown.
+    // Additionally we can specify the column output order:
     //
-    // $augmentor = new Augmentor([Augmentor::KEY_COLNAMES=>['email','token','study_id']]);
+     // $augmentor = new Augmentor([Augmentor::KEY_REQUIRED_COLNAMES => ['email','token','study_id'], Augmentor::KEY_COLOUMN_ORDER => ['token','email','study_id']]);
     //
     // The same in two steps (propably easier to read):
     // $augmentor = new Augmentor();
     // $augmentor->setRequiredColumns(['email','token','study_id']);
+    // $augmentor->setColumnOutputOrder(['token','email','study_id']);
     //
-    // Can also be omitted if we do not want to perform this check.
+    // Can also be omitted if we do not want to use this feature.
 
     // Register basic services.
 

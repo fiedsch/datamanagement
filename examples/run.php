@@ -38,7 +38,7 @@ try {
     // to set these columns an exception will be thrown.
     // Additionally we can specify the column output order:
     //
-     // $augmentor = new Augmentor([Augmentor::KEY_REQUIRED_COLNAMES => ['email','token','study_id'], Augmentor::KEY_COLOUMN_ORDER => ['token','email','study_id']]);
+    // $augmentor = new Augmentor([Augmentor::KEY_REQUIRED_COLNAMES => ['email','token','study_id'], Augmentor::KEY_COLOUMN_ORDER => ['token','email','study_id']]);
     //
     // The same in two steps (propably easier to read):
     // $augmentor = new Augmentor();

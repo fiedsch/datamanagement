@@ -8,15 +8,8 @@ use PHPUnit\Framework\TestCase;
 
 class WriterTest extends TestCase
 {
-    /**
-     * @var string
-     */
-    protected $filepath = 'tests/assets/tempfile.txt';
-
-    /**
-     * @var Writer
-     */
-    protected $writer;
+    protected string $filepath = 'assets/tempfile.txt';
+    protected Writer $writer;
 
     /**
      * setup for all tests

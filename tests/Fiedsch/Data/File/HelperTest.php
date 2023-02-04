@@ -30,12 +30,13 @@ class HelperTest extends TestCase
             $this->assertEquals($letter, Helper::getBySC($data, $letter));
         }
 
-        // accessing data at non existing index: return null
+        // accessing data at non-existing index: return null
         $this->assertEquals(null, Helper::getBySC($data, 'xy'));
     }
 
     /**
      * @expectedDeprecation Deprecated. Use toNamedArray() instead.
+     * @noinspection PhpDeprecationInspection
      */
     public function testSetArrayKeys(): void
     {
@@ -44,7 +45,7 @@ class HelperTest extends TestCase
         $expected = ['one'=>1, 'two'=>2, 'three'=>3];
         $this->assertEquals($expected, Helper::setArrayKeys($data, $names));
 
-        $this->expectException(\RuntimeException::class);
+        $this->expectException(RuntimeException::class);
         $this->assertEquals($expected, Helper::setArrayKeys($data, ['one'=>1, 'two'=>2]));
     }
 
@@ -55,7 +56,7 @@ class HelperTest extends TestCase
         $expected = ['one'=>1, 'two'=>2, 'three'=>3];
         $this->assertEquals($expected, Helper::toNamedArray($data, $names));
 
-        $this->expectException(\RuntimeException::class);
+        $this->expectException(RuntimeException::class);
         $this->assertEquals($expected, Helper::toNamedArray($data, ['one'=>1, 'two'=>2]));
     }
 

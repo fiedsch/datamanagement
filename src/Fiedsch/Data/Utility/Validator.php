@@ -9,6 +9,7 @@
 
 namespace Fiedsch\Data\Utility;
 
+use function filter_var;
 class Validator
 {
 
@@ -19,11 +20,9 @@ class Validator
      *  '0' (false) otherwise. (string instead of boolean as the result will be written
      *   to as new data file and false would result in '').
      */
-    public function isValidEmail($email)
+    public function isValidEmail(string $email): string
     {
-
         return $email === filter_var($email, FILTER_VALIDATE_EMAIL) ? '1' : '0';
-
     }
 
 }

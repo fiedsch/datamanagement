@@ -12,8 +12,12 @@ declare(strict_types=1);
 
 namespace Fiedsch\Data\File;
 
+use League\Csv\InvalidArgument;
 use League\Csv\Reader as LeagueCsvReader;
 use League\Csv\Statement;
+use Iterator;
+use Exception;
+use const E_USER_DEPRECATED;
 
 /**
  * Class CsvReader
@@ -30,20 +34,11 @@ class CsvReader
     const RETURN_EVERY_LINE = Reader::RETURN_EVERY_LINE;
     const SKIP_EMPTY_LINES = Reader::SKIP_EMPTY_LINES;
 
-    /**
-     * @var int
-     */
-    protected $lineNumber;
+    protected int $lineNumber;
 
-    /**
-     * @var LeagueCsvReader
-     */
-    protected $csvReader;
+    protected LeagueCsvReader $csvReader;
 
-    /**
-     * @var \Iterator
-     */
-    protected $csvRecordsIterator;
+    protected Iterator $csvRecordsIterator;
 
     public array $header;
 
@@ -60,10 +55,13 @@ class CsvReader
      * @param string $escape (optional, default value is '\') the character used for escaping.
      *
      * For `$delimiter`, `$enclosure`, and `$escape` see also http://php.net/manual/en/function.str-getcsv.php.
+     *
+     * @throws InvalidArgument
+     * @throws Exception
      */
     public function __construct(string $filepath, string $delimiter, string $enclosure = '"', string $escape = "\\")
     {
-        $this->csvReader = LeagueCsvReader::createFromPath($filepath, 'r');
+        $this->csvReader = LeagueCsvReader::createFromPath($filepath);
         $this->csvReader->setDelimiter($delimiter);
         $this->csvReader->setEnclosure($enclosure);
         $this->csvReader->setEscape($escape);
@@ -79,7 +77,7 @@ class CsvReader
      *
      * @return string the delimiter that separates columns in the file.
      */
-    public function getDelimiter()
+    public function getDelimiter(): string
     {
         return $this->csvReader->getDelimiter();
     }
@@ -89,17 +87,17 @@ class CsvReader
      *
      * @return string the character that is used to enclose column values.
      */
-    public function getEnclosure()
+    public function getEnclosure(): string
     {
         return $this->csvReader->getEnclosure();
     }
 
     /**
-     * Access the escpe.
+     * Access the escape.
      *
-     * @return string the optional character that is used for escapeing.
+     * @return string the optional character that is used for escaping.
      */
-    public function getEscape()
+    public function getEscape(): string
     {
         return $this->csvReader->getEscape();
     }
@@ -113,10 +111,11 @@ class CsvReader
      * Read the first line of the file and use it as header (column names).
      *
      * @deprecated There is no need to call this method anymore as League\Csv\Reader automatically scans the header
+     * @noinspection PhpUnused
      */
-    public function readHeader()
+    public function readHeader(): void
     {
-        @trigger_error('There is no need to call this method anymore as League\Csv\Reader automatically scans the header', \E_USER_DEPRECATED);
+        @trigger_error('There is no need to call this method anymore as League\Csv\Reader automatically scans the header', E_USER_DEPRECATED);
     }
 
     /**
@@ -133,15 +132,15 @@ class CsvReader
      * @param int $mode (SKIP_EMPTY_LINES or RETURN_EVERY_LINE which is the default)
      * @return array|null the data from next line of the file or null if there are no more lines.
      */
-    public function getLine($mode = self::RETURN_EVERY_LINE)
+    public function getLine(int $mode = self::RETURN_EVERY_LINE): ?array
     {
         $row = $this->csvRecordsIterator->current();
         if (null === $row) {
-            return $row;
+            return null;
         }
         $this->csvRecordsIterator->next();
         $this->lineNumber++;
-        if ($mode === self::SKIP_EMPTY_LINES && self::isEmpty($row, false)) {
+        if ($mode === self::SKIP_EMPTY_LINES && self::isEmpty($row)) {
             return $this->getLine($mode);
         }
 
@@ -153,7 +152,7 @@ class CsvReader
      *
      * @return array|null the file's header (first row).
      */
-    public function getHeader()
+    public function getHeader(): ?array
     {
         return $this->header;
     }
@@ -163,11 +162,11 @@ class CsvReader
      *
      * @param array $line the line to check.
      *
-     * @param boolean $strict controls how to compare "empty" strings (i.e. is ' ' empty or not).
+     * @param bool $strict controls how to compare "empty" strings (i.e. is ' ' empty or not).
      *
-     * @return boolean
+     * @return bool
      */
-    public static function isEmpty(array $line, $strict = false)
+    public static function isEmpty(array $line, bool $strict = false): bool
     {
         $test = array_filter($line, function ($element) use ($strict) {
             if (null === $element) {

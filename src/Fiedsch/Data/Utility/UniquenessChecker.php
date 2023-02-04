@@ -16,7 +16,7 @@ class UniquenessChecker
 
     const NO_KEY = "_no_key_";
 
-    protected $data;
+    protected array $data;
 
     public function __construct()
     {
@@ -30,13 +30,13 @@ class UniquenessChecker
      *
      * @param string $category the category to which the $value belongs
      *
-     * @param boolean $strict if set to true string comparisons will be case sensitive
+     * @param bool $strict if set to true string comparisons will be case-sensitive
      *
      * @return string '0' or '1' indicating false or true respectively.
      *   (string instead of boolean as the result will be written
      *   to a new data file and false would result in '').
      */
-    public function isNew($value, $category = self::NO_KEY, $strict = false)
+    public function isNew(string $value, string $category = self::NO_KEY, bool $strict = false): string
     {
 
         $result = '1';
@@ -66,7 +66,7 @@ class UniquenessChecker
      *
      * @return array the duplicates found while calling isNew()
      */
-    public function getDuplicates()
+    public function getDuplicates(): array
     {
         $result = [];
         foreach ($this->data as $key => $data) {

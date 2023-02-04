@@ -1,6 +1,7 @@
 <?php /** @noinspection PhpUnusedParameterInspection */
 
 declare(strict_types=1);
+
 use Fiedsch\Data\Augmentation\Augmentor;
 use PHPUnit\Framework\TestCase;
 
@@ -76,7 +77,7 @@ class AugmentorTest extends TestCase
 
         $this->assertFalse($augmentor->hasRequiredColumnsSpecification());
         $augmentor->setColumnOutputOrder(['one', 'two', 'three']);
-        $this->expectException(\RuntimeException::class);
+        $this->expectException(RuntimeException::class);
         $this->expectExceptionMessage("does not exist in augmented data");
         $augmentor->augment([]);
     }
@@ -95,7 +96,7 @@ class AugmentorTest extends TestCase
         $this->assertFalse($augmentor->hasRequiredColumnsSpecification());
         $augmentor->setColumnOutputOrder(['one', 'two', 'three']);
 
-        $this->expectException(\RuntimeException::class);
+        $this->expectException(RuntimeException::class);
         $this->expectExceptionMessage("found keys not specified in column order");
         $augmentor->augment([]);
     }
@@ -103,7 +104,7 @@ class AugmentorTest extends TestCase
     /**
      * Festgelegte Reihenfolge und benötigte Spalten müssen zusammenpassen
      */
-    public function testColumnOrderAndRquiredColumnsSpecifications(): void
+    public function testColumnOrderAndRequiredColumnsSpecifications(): void
     {
         $augmentor = new Augmentor();
         $augmentor->addRule('aaa', function(Augmentor $augmentor, array $data) { return ['one'=>1]; });
@@ -114,8 +115,24 @@ class AugmentorTest extends TestCase
         $augmentor->setRequiredColumns(['one', 'two', 'three']);
         $augmentor->setColumnOutputOrder(['one', 'three', 'drei']);
 
-        $this->expectException(\RuntimeException::class);
+        $this->expectException(RuntimeException::class);
         $augmentor->augment([]);
+    }
+
+    public function testGetRequiredColumns(): void
+    {
+        $augmentor = new Augmentor();
+
+        $augmentor->setRequiredColumns(['one', 'two', 'three']);
+        $this->assertEquals(['one', 'two', 'three'], $augmentor->getRequiredColumns());
+    }
+
+    public function testGetColumnOutputOrder(): void
+    {
+        $augmentor = new Augmentor();
+
+        $augmentor->setColumnOutputOrder(['one', 'two', 'three']);
+        $this->assertEquals(['one', 'two', 'three'], $augmentor->getColumnOutputOrder());
     }
     /**
      * Test basic data augmentation
@@ -139,26 +156,26 @@ class AugmentorTest extends TestCase
         });
 
         $result = $augmentor->augment($data[0]);
-        $this->assertEquals($result, ['bar' => 'FOO1', 'baz' => 'foo1']);
-        $this->assertEquals($augmentor->getAugmentedSoFar(), ['bar' => 'FOO1', 'baz' => 'foo1']);
+        $this->assertEquals(['bar' => 'FOO1', 'baz' => 'foo1'], $result);
+        $this->assertEquals(['bar' => 'FOO1', 'baz' => 'foo1'], $augmentor->getAugmentedSoFar());
 
         $result = $augmentor->augment($data[1]);
-        $this->assertEquals($result, ['bar' => 'FOO2', 'baz' => 'foo2']);
-        $this->assertEquals($augmentor->getAugmentedSoFar(), ['bar' => 'FOO2', 'baz' => 'foo2']);
+        $this->assertEquals(['bar' => 'FOO2', 'baz' => 'foo2'], $result);
+        $this->assertEquals(['bar' => 'FOO2', 'baz' => 'foo2'], $augmentor->getAugmentedSoFar());
 
         $augmentor->augment($data[2]);
-        $this->assertEquals($augmentor->getAugmentedSoFar(), ['bar' => 'FOO3', 'baz' => 'foo3']);
+        $this->assertEquals(['bar' => 'FOO3', 'baz' => 'foo3'], $augmentor->getAugmentedSoFar());
 
     }
 
     /**
-     * with a fresh Augmentor $a $a['foo'] is not set
+     * with a fresh Augmentor $a['foo'] is not set
      */
     public function testAppendToUnsetProperty(): void
     {
         $a = new Augmentor();
         $a->appendTo('foo', 1);
-        $this->assertEquals($a['foo'], [1]);
+        $this->assertEquals([1], $a['foo']);
     }
 
     /**
@@ -169,10 +186,10 @@ class AugmentorTest extends TestCase
         $a = new Augmentor();
         $a['foo'] = [1];
         $a->appendTo('foo', 2);
-        $this->assertEquals($a['foo'], [1, 2]);
+        $this->assertEquals([1, 2], $a['foo']);
 
         $a->appendTo('foo', "3");
-        $this->assertEquals($a['foo'], [1, 2, '3']);
+        $this->assertEquals([1, 2, '3'], $a['foo']);
     }
 
     /**
@@ -184,7 +201,7 @@ class AugmentorTest extends TestCase
         $a = new Augmentor();
         $a['foo'] = 1;
         $a->appendTo('foo', 2);
-        $this->assertEquals($a['foo'], [1, 2]);
+        $this->assertEquals([1, 2], $a['foo']);
     }
 
     /**
@@ -197,18 +214,18 @@ class AugmentorTest extends TestCase
         $a = new Augmentor();
         $a['foo'] = [1, 2, 3];
         $a->appendTo('foo', ['a' => 'a']);
-        $this->assertEquals($a['foo'], [1, 2, 3, 'a' => 'a']);
+        $this->assertEquals([1, 2, 3, 'a' => 'a'], $a['foo']);
 
         $a->appendTo('foo', ['a' => 'A']);
-        $this->assertEquals($a['foo'], [1, 2, 3, 'a' => 'A']);
+        $this->assertEquals([1, 2, 3, 'a' => 'A'], $a['foo']);
 
         $a = new Augmentor();
         $a['foo'] = ['a' => 'A', 'b' => 'b'];
         $a->appendTo('foo', ['a' => 'a', 'b' => 'b']);
-        $this->assertEquals($a['foo'], ['a' => 'a', 'b' => 'b']);
+        $this->assertEquals(['a' => 'a', 'b' => 'b'], $a['foo']);
 
         $a->appendTo('foo', ['b' => 'B']);
-        $this->assertEquals($a['foo'], ['a' => 'a', 'b' => 'B']);
+        $this->assertEquals(['a' => 'a', 'b' => 'B'], $a['foo']);
     }
 
     /**

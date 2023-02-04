@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+use Fiedsch\Data\File\Reader;
 use Fiedsch\Data\File\FixedWidthReader;
 use PHPUnit\Framework\TestCase;
 
@@ -10,12 +11,12 @@ class FixedWidthReaderTest extends TestCase
     /**
      * @var string
      */
-    protected $filepath = 'tests/assets/data.fixed';
+    protected string $filepath = 'assets/data.fixed';
 
     /**
      * @var array
      */
-    protected $fields = [
+    protected array $fields = [
         ['from'=>0,'to'=>5],
         ['from'=>5,'to'=>13],
         ['from'=>13,'to'=>100],
@@ -25,7 +26,7 @@ class FixedWidthReaderTest extends TestCase
     /**
      * @var FixedWidthReader
      */
-    protected $reader;
+    protected FixedWidthReader $reader;
 
     /**
      * setup for all tests
@@ -46,7 +47,7 @@ class FixedWidthReaderTest extends TestCase
     public function testGetLines(): void
     {
         $i = 0;
-        while (($data = $this->reader->getLine(FixedWidthReader::SKIP_EMPTY_LINES)) !== null) {
+        while (($data = $this->reader->getLine(Reader::SKIP_EMPTY_LINES)) !== null) {
             if ($i++ == 0) {
                 $this->assertEquals('01234',    $data[0]);
                 $this->assertEquals('56789012', $data[1]);
@@ -60,51 +61,52 @@ class FixedWidthReaderTest extends TestCase
     public function testShortLinesLines(): void
     {
         $lastLine = null;
-        while (($data = $this->reader->getLine(FixedWidthReader::SKIP_EMPTY_LINES)) !== null) {
+        while (($data = $this->reader->getLine(Reader::SKIP_EMPTY_LINES)) !== null) {
             $lastLine = $data;
         }
         $this->assertEquals(['last','',''], $lastLine);
     }
 
+    /** @noinspection PhpParamsInspection */
     public function testInvalidConfigNull(): void
     {
-        $this->expectException(\TypeError::class);
+        $this->expectException(TypeError::class);
         $this->reader = new FixedWidthReader($this->filepath, null);
     }
 
     public function testInvalidConfigEmpty(): void
     {
-        $this->expectException(\RuntimeException::class);
+        $this->expectException(RuntimeException::class);
         $this->reader = new FixedWidthReader($this->filepath, []);
     }
 
     public function testInvalidConfigMissingTo(): void
     {
-        $this->expectException(\RuntimeException::class);
+        $this->expectException(RuntimeException::class);
         $this->reader = new FixedWidthReader($this->filepath, ['from'=>1]);
     }
 
     public function testInvalidConfigNegativeFrom(): void
     {
-        $this->expectException(\RuntimeException::class);
+        $this->expectException(RuntimeException::class);
         $this->reader = new FixedWidthReader($this->filepath, ['from'=>-1]);
     }
 
     public function testInvalidConfigNegativeTo(): void
     {
-        $this->expectException(\RuntimeException::class);
+        $this->expectException(RuntimeException::class);
         $this->reader = new FixedWidthReader($this->filepath, ['from'=>1, 'to'=>-1]);
     }
 
     public function testInvalidConfigToEqFrom(): void
     {
-        $this->expectException(\RuntimeException::class);
+        $this->expectException(RuntimeException::class);
         $this->reader = new FixedWidthReader($this->filepath, ['from'=>3, 'to'=>3]);
     }
 
     public function testInvalidConfigToNotGtFrom(): void
     {
-        $this->expectException(\RuntimeException::class);
+        $this->expectException(RuntimeException::class);
         $this->reader = new FixedWidthReader($this->filepath, ['from'=>3, 'to'=>-2]);
     }
 

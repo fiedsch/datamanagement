@@ -11,17 +11,17 @@ class CsvWriterTest extends TestCase
     /**
      * @var string
      */
-    protected $filepath = 'tests/assets/tempfile.csv';
+    protected string $filepath = 'assets/tempfile.csv';
 
     /**
      * @var CsvWriter
      */
-    protected $writer;
+    protected CsvWriter $writer;
 
     /**
      * @var string
      */
-    protected $separator = '|';
+    protected string $separator = '|';
 
     /**
      * setup for all tests

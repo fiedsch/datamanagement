@@ -11,12 +11,12 @@ class ReaderTest extends TestCase
     /**
      * @var string
      */
-    protected $filepath = 'tests/assets/data.txt';
+    protected string $filepath = 'assets/data.txt';
 
     /**
      * @var Reader
      */
-    protected $reader;
+    protected Reader $reader;
 
     /**
      * setup for all tests
@@ -36,6 +36,7 @@ class ReaderTest extends TestCase
 
     /**
      * test line numbering
+     * @noinspection PhpUnusedLocalVariableInspection
      */
     public function testLinenumbering(): void
     {
@@ -48,6 +49,7 @@ class ReaderTest extends TestCase
 
     /**
      * Test skip empty lines
+     * @noinspection PhpUnusedLocalVariableInspection
      */
     public function testSkipEmptyLines(): void
     {
@@ -61,6 +63,7 @@ class ReaderTest extends TestCase
 
     /**
      * Test do not skip empty lines (default behaviour)
+     * @noinspection PhpUnusedLocalVariableInspection
      */
     public function testDoNotSkipEmptyLines(): void
     {

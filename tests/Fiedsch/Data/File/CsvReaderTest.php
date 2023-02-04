@@ -9,21 +9,11 @@ use PHPUnit\Framework\TestCase;
 
 class CsvReaderTest extends TestCase
 {
-    /**
-     * @var string
-     */
-    protected $filepath = 'tests/assets/data.csv';
+    protected string $filepath = 'assets/data.csv';
 
-    /**
-     * @var string
-     */
-    protected $separator = ';';
+    protected string $separator = ';';
 
-
-    /**
-     * @var CsvReader
-     */
-    protected $reader;
+    protected CsvReader $reader;
 
     /**
      * setup for all tests
@@ -43,6 +33,7 @@ class CsvReaderTest extends TestCase
 
     /**
      * test line numbering
+     * @noinspection PhpUnusedLocalVariableInspection
      */
     public function testLinenumbering(): void
     {
@@ -55,6 +46,7 @@ class CsvReaderTest extends TestCase
 
     /**
      * Test skip empty lines
+     * @noinspection PhpUnusedLocalVariableInspection
      */
     public function testSkipEmptyLines(): void
     {
@@ -68,6 +60,7 @@ class CsvReaderTest extends TestCase
 
     /**
      * Test do not skip empty lines (default behaviour)
+     * @noinspection PhpUnusedLocalVariableInspection
      */
     public function testDoNotSkipEmptyLines(): void
     {

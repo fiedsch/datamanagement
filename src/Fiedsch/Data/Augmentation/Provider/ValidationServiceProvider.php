@@ -25,8 +25,10 @@ class ValidationServiceProvider implements ServiceProviderInterface
 
     /**
      * @param Container $container the dependency injection container.
+     * @noinspection PhpParameterNameChangedDuringInheritanceInspection
+     * @noinspection PhpUnused
      */
-    public function register(Container $container)
+    public function register(Container $container): void
     {
 
         $container['validation'] = function () {

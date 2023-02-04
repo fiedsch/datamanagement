@@ -9,6 +9,8 @@
 
 namespace Fiedsch\Data\File;
 
+use RuntimeException;
+
 /**
  * Class CsvWriter
  * @package Fiedsch\Data
@@ -25,24 +27,18 @@ class CsvWriter extends Writer
     /**
      * @var string the delimiter that separates columns in the file.
      */
-    protected $delimiter;
+    protected string $delimiter;
 
     /**
      * @var string the character that is used to enclose column values
      * that might contain the delimiter as part of their value.
      */
-    protected $enclosure;
+    protected string $enclosure;
 
     /**
      * @var string the character used for escaping.
      */
-    protected $escape;
-
-    /**
-     * @var array the file might contain a header (column names) in its first row.
-     */
-    private $header;
-
+    protected string $escape;
 
     /**
      * Constructor.
@@ -61,13 +57,12 @@ class CsvWriter extends Writer
      *
      * For `$delimiter`, `$enclosure`, and `$escape` see also http://php.net/manual/en/function.str-getcsv.php.
      */
-    public function __construct($filepath, $delimiter, $enclosure = '"', $escape = "\\", $mode = 'w')
+    public function __construct(string $filepath, string $delimiter, string $enclosure = '"', string $escape = "\\", string $mode = 'w')
     {
         parent::__construct($filepath, $mode);
         $this->delimiter = $delimiter;
         $this->enclosure = $enclosure;
         $this->escape = $escape;
-        $this->header = null;
     }
 
     /**
@@ -75,7 +70,7 @@ class CsvWriter extends Writer
      *
      * @return string the delimiter that separates columns in the file.
      */
-    public function getDelimiter()
+    public function getDelimiter(): string
     {
         return $this->delimiter;
     }
@@ -85,17 +80,17 @@ class CsvWriter extends Writer
      *
      * @return string the character that is used to enclose column values.
      */
-    public function getEnclosure()
+    public function getEnclosure(): string
     {
         return $this->enclosure;
     }
 
     /**
-     * Access the escpe.
+     * Access the escape.
      *
-     * @return string the optional character that is used for escapeing.
+     * @return string the optional character that is used for escaping.
      */
-    public function getEscape()
+    public function getEscape(): string
     {
         return $this->escape;
     }
@@ -104,11 +99,12 @@ class CsvWriter extends Writer
      * Read and return the next line from the file.
      *
      * @param array $data
+     * @noinspection PhpParameterNameChangedDuringInheritanceInspection
      */
-    public function printLine($data)
+    public function printLine($data = null): void
     {
         if (!is_array($data)) {
-            throw new \RuntimeException("can not write CSV data. supplied data is not an array.");
+            throw new RuntimeException("can not write CSV data. supplied data is not an array.");
         }
         fputcsv($this->handle, $data, $this->delimiter, $this->enclosure, $this->escape);
         ++$this->lineNumber;

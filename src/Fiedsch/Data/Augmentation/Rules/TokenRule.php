@@ -22,7 +22,7 @@ class TokenRule implements AugmentationRule
      *
      * @return array
      */
-    public function __invoke(Augmentor $augmentor, $data = null)
+    public function __invoke(Augmentor $augmentor, array $data): array
     {
         return ['token' => $augmentor['token']->getUniqueToken()];
     }

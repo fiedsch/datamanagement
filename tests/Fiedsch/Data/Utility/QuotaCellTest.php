@@ -27,7 +27,7 @@ class QuotaCellTest extends TestCase
     {
         $targets = ['x' => 10, 'y' => 20, 'z' => 30];
         $cell = new QuotaCell($targets);
-        $this->assertFalse($cell->add(5, 'a')); // index a is not defined, so we can't add to it
+        $this->assertFalse($cell->add(5, 'a')); // index 'a' is not defined, so we can't add to it
     }
 
     public function testHasTarget(): void
@@ -35,7 +35,8 @@ class QuotaCellTest extends TestCase
         $targets = ['42' => 10, '43' => 20, '44' => 12];
         $cell = new QuotaCell($targets);
         foreach ($targets as $key => $count) {
-            $this->assertTrue($cell->hasTarget($key));
+            /** @noinspection PhpCastIsUnnecessaryInspection */
+            $this->assertTrue($cell->hasTarget((string)$key));
         }
         $this->assertFalse($cell->hasTarget('not in list'));
     }
@@ -43,15 +44,15 @@ class QuotaCellTest extends TestCase
     public function testMultidimensionalTargets(): void
     {
         $targets = [
-            0 => 42,
-            1 => 42,
+            '0' => 42,
+            '1' => 42,
             'a' =>
                 [
-                    0 => 42,
-                    1 => 42,
+                    '0' => 42,
+                    '1' => 42,
                     'b' => [
-                        0 => 42,
-                        1 => 4242
+                        '0' => 42,
+                        '1' => 4242
                     ],
                 ],
         ];
@@ -61,7 +62,7 @@ class QuotaCellTest extends TestCase
         $this->assertEquals($targets, $cell->getTargets());
 
         $expectedcounts = $targets;
-        array_walk_recursive($expectedcounts, function(&$value, $key) { $value = 0; });
+        array_walk_recursive($expectedcounts, function(&$value) { $value = 0; });
 
         $this->assertEquals($expectedcounts, $cell->getCounts());
 

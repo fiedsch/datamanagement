@@ -9,7 +9,7 @@
  *
  * Marker interface
  * Objects implementing __invoke can be used as callables (since PHP 5.3)
- * see Augmantor::augment() and Augmentor::addRule()
+ * see Augmentor::augment() and Augmentor::addRule()
  */
 
 namespace Fiedsch\Data\Augmentation\Rules;
@@ -24,5 +24,5 @@ interface AugmentationRule
      *
      * @return array
      */
-    public function __invoke(Augmentor $augmentor, $data = null);
+    public function __invoke(Augmentor $augmentor, array $data): array;
 }

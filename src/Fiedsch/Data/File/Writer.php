@@ -10,6 +10,8 @@
 
 namespace Fiedsch\Data\File;
 
+use RuntimeException;
+
 /**
  * Class Writer
  * @package Fiedsch\Data
@@ -35,7 +37,7 @@ class Writer extends File
      * @param string $mode the file mode (see PHPs fopen() $mode parameter;
      *   http://php.net/manual/de/function.fopen.php)
      */
-    public function __construct($filepath, $mode = 'w')
+    public function __construct(string $filepath, string $mode = 'w')
     {
         parent::__construct($filepath, $mode);
     }
@@ -51,13 +53,14 @@ class Writer extends File
     /**
      * Write to the file.
      *
-     * @param string|null the line to be written to the file or null to write an empty line to the file.
+     * @param string|null $line the line to be written to the file or null to write an empty line to the file.
      *  Note that a newline char is automatically appended!
+     * @noinspection PhpMissingParamTypeInspection
      */
-    public function printLine($line)
+    public function printLine($line = null): void
     {
         if (!$this->handle) {
-            throw new \RuntimeException('can not write to file: invalid file handle');
+            throw new RuntimeException('can not write to file: invalid file handle');
         }
         fwrite($this->handle, $line . "\n");
         ++$this->lineNumber;

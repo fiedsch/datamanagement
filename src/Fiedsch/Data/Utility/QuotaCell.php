@@ -9,6 +9,8 @@
 
 namespace Fiedsch\Data\Utility;
 
+use RuntimeException;
+
 /**
  * Class QuotaCell
  *
@@ -21,15 +23,9 @@ namespace Fiedsch\Data\Utility;
  */
 class QuotaCell
 {
-    /**
-     * @var array
-     */
-    protected $targets;
+    protected array $targets;
 
-    /**
-     * @var array
-     */
-    protected $counts;
+    protected array $counts;
 
     /**
      * @param array $targets
@@ -38,21 +34,21 @@ class QuotaCell
     {
         $this->targets = $targets;
         $this->counts = $this->targets;
-        array_walk_recursive($this->counts, function(&$value, $key) { $value = 0;  });
+        array_walk_recursive($this->counts, function(&$value) { $value = 0; });
     }
 
     /**
      * Try to change (typically increment) the counter and return
-     * true if successfull (i.e. there is an entry for the $key and
+     * true if successful (i.e. there is an entry for the $key and
      * adding $amount does not reach the quota limit).
      *
      * @param int $amount the amount to add
-     * @param int|string|array $key the key.
+     * @param string|array $key the key.
      * @param boolean $force set to true if $amount shall always be added regardless
      *                       of exceeding the quota limit
-     * @return boolean true if $amount could be added, false otherwise
+     * @return bool true if $amount could be added, false otherwise
      */
-    public function add($amount, $key = '', $force = false)
+    public function add(int $amount, string|array $key = '', bool $force = false): bool
     {
         if ($force || $this->canAdd($amount, $key)) {
             $this->setCount($key, $this->getCount($key) + $amount, true);
@@ -65,22 +61,22 @@ class QuotaCell
      * Could we add($amount, $key) without exceeding the quota?
      *
      * @param int $amount
-     * @param int|string|array $key
+     * @param string|array $key
      *
-     * @return boolean
+     * @return bool
      */
-    public function canAdd($amount, $key = '')
+    public function canAdd(int $amount, string|array $key = ''): bool
     {
         return $this->getCount($key) + $amount <= $this->getTarget($key, 0);
     }
 
     /**
-     * @param int|string|array $key
+     * @param string|array $key
      * @param array $target the target array from which we try to get the value for the $key
-     * @param null|int $default the value that will be returned if there is no entry for the $key
-     * @return int
+     * @param ?string $default the value that will be returned if there is no entry for the $key
+     * @return ?string
      */
-    protected function getDeepArrayValue($key, &$target, $default = null)
+    protected function getDeepArrayValue(string|array $key, array &$target, string $default = null): ?string
     {
         if (!is_array($key)) {
             if (!isset($target[$key])) {
@@ -99,18 +95,18 @@ class QuotaCell
     }
 
     /**
-     * @param int|string|array $key
+     * @param string|array $key
      * @param array $target the target array from which we try to get the value for the $key
      * @param int $value
-     * @param boolean $force create entry in array if it did not exist yet
-     * @throws \RuntimeException
+     * @param bool $force create entry in array if it did not exist yet
+     * @throws RuntimeException
      */
-    protected static function setDeepArrayValue($key, &$target, $value, $force = false)
+    protected static function setDeepArrayValue(string|array $key, array &$target, int $value, bool $force = false): void
     {
         if (!is_array($key)) {
             if (!isset($target[$key])) {
                 if (!$force) {
-                    throw new \RuntimeException("no entry for key '$key''");
+                    throw new RuntimeException("no entry for key '$key''");
                 }
             }
             $target[$key] = $value;
@@ -121,7 +117,7 @@ class QuotaCell
             if (!isset($pointer[$key[$i]])) {
                 if (!$force) {
                     $k = implode(';', $key);
-                    throw new \RuntimeException("no entry for key '$k''");
+                    throw new RuntimeException("no entry for key '$k''");
                 }
             }
             $pointer = &$pointer[$key[$i]];
@@ -130,42 +126,42 @@ class QuotaCell
     }
 
     /**
-     * @param int|string|array $key
+     * @param string|array $key
      * @return int
      */
-    public function getCount($key)
+    public function getCount(string|array $key): int
     {
         return $this->getDeepArrayValue($key, $this->counts, 0);
     }
 
     /**
-     * @param int|string|array $key
-     * @param null|int $default value that will be returned if there is no target for $key
+     * @param string|array $key
+     * @param string|null $default value that will be returned if there is no target for $key
      * @return int|null null if target is not set
      */
-    public function getTarget($key, $default = null)
+    public function getTarget(string|array $key, string $default = null): ?int
     {
         return $this->getDeepArrayValue($key, $this->targets, $default);
     }
 
     /**
-     * @param int|string|array $key
+     * @param string|array $key
      * @param int $value
-     * @param boolean $force
-     * @throws \RuntimeException
+     * @param bool $force
+     * @throws RuntimeException
      */
-    protected function setCount($key, $value, $force = false)
+    protected function setCount(string|array $key, int $value, bool $force = false): void
     {
         self::setDeepArrayValue($key, $this->counts, $value, $force);
     }
 
     /**
-     * @param int|string|array $key
+     * @param string $key
      * @param int $value
-     * @param boolean $force
-     * @throws \RuntimeException
+     * @param bool $force
+     * @throws RuntimeException
      */
-    protected function setTarget($key, $value, $force = false)
+    protected function setTarget(string $key, int $value, bool $force = false): void
     {
         self::setDeepArrayValue($key, $this->targets, $value, $force);
     }
@@ -173,7 +169,7 @@ class QuotaCell
     /**
      * @return array
      */
-    public function getCounts()
+    public function getCounts(): array
     {
         return $this->counts;
     }
@@ -181,7 +177,7 @@ class QuotaCell
     /**
      * @return array
      */
-    public function getTargets()
+    public function getTargets(): array
     {
         return $this->targets;
     }
@@ -189,15 +185,15 @@ class QuotaCell
     /**
      * Did we already reach the quota limit for the cell defined by the $key?
      *
-     * @param int|string|array $key
+     * @param string $key
      *
-     * @return boolean
-     * @throws \RuntimeException
+     * @return bool
+     * @throws RuntimeException
      */
-    public function isFull($key)
+    public function isFull(string $key): bool
     {
         if (!$this->hasTarget($key)) {
-            throw new \RuntimeException("undefined key '$key'");
+            throw new RuntimeException("undefined key '$key'");
         }
         return $this->getCount($key) >= $this->getTarget($key);
     }
@@ -205,13 +201,13 @@ class QuotaCell
     /**
      * Do we have a target configuration for the key?
      *
-     * @param int|string|array $key
+     * @param string $key
      *
      * @return bool
      */
-    public function hasTarget($key)
+    public function hasTarget(string $key): bool
     {
-        return null !== $this->getTarget($key, null);
+        return null !== $this->getTarget($key);
     }
 
 }

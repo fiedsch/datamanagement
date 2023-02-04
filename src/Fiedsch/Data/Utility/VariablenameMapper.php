@@ -10,24 +10,19 @@
 
 namespace Fiedsch\Data\Utility;
 
+use RuntimeException;
+
 class VariablenameMapper
 {
+    protected array $lookup;
 
-    /**
-     * @var array
-     */
-    protected $lookup;
-
-    /**
-     * @var boolean
-     */
-    protected $throwException;
+    protected bool $throwException;
 
     /**
      * @param array $names
-     * @param boolean $throwException throw an exception when a lookup fails
+     * @param bool $throwException throw an exception when a lookup fails
      */
-    public function __construct($names, $throwException = false)
+    public function __construct(array $names, bool $throwException = false)
     {
         $this->lookup =
             array_filter(
@@ -46,7 +41,7 @@ class VariablenameMapper
             );
         $this->throwException = $throwException;
         if (count($this->lookup) != count($names)) {
-            throw new \RuntimeException("supplied array of names contained invalid values or duplicates.");
+            throw new RuntimeException("supplied array of names contained invalid values or duplicates.");
         }
     }
 
@@ -55,16 +50,16 @@ class VariablenameMapper
      *
      * @return int index of $name in the argument passed to the constructor or -1 if
      *             $name is not found
-     * @throws \RuntimeException
+     * @throws RuntimeException
      */
-    public function getColumnNumber($name)
+    public function getColumnNumber(string $name): int
     {
         $name = trim($name);
         if (array_key_exists($name, $this->lookup)) {
             return $this->lookup[$name];
         }
         if ($this->throwException) {
-            throw new \RuntimeException("name '$name' not found");
+            throw new RuntimeException("name '$name' not found");
         }
         return -1;
     }
@@ -72,7 +67,7 @@ class VariablenameMapper
     /**
      * @return array the mapping of column names to column indexes
      */
-    public function getMapping()
+    public function getMapping(): array
     {
         return $this->lookup;
     }

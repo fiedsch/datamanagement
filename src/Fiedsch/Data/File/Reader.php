@@ -38,12 +38,9 @@ class Reader extends File
      * @param string $filepath an absolute or relative path to a file. In case of a relative path
      *        the current working directory is prefixed to the path to make it absolute.
      */
-    public function __construct($filepath)
+    public function __construct(string $filepath)
     {
         parent::__construct($filepath, 'r');
-
-        $this->lineNumber = 0;
-
     }
 
     /**
@@ -60,7 +57,7 @@ class Reader extends File
      * @param int $mode (SKIP_EMPTY_LINES or RETURN_EVERY_LINE which is the default)
      * @return string|null the next line of the file or null if there are no more lines
      */
-    public function getLine($mode = Reader::RETURN_EVERY_LINE)
+    public function getLine(int $mode = Reader::RETURN_EVERY_LINE): mixed
     {
         if ($this->handle) {
             $line = fgets($this->handle);
@@ -82,11 +79,11 @@ class Reader extends File
      *
      * @param string $line the line to check.
      *
-     * @param boolean $strict if $strict is set to true, ' ' is not considered empty.
+     * @param bool $strict if $strict is set to true, ' ' is not considered empty.
      *
-     * @return boolean
+     * @return bool
      */
-    public static function isEmpty($line, $strict = false)
+    public static function isEmpty(string $line, bool $strict = !self::STRICT_EMPTY): bool
     {
         if ($strict) {
             return $line === '';

@@ -10,11 +10,16 @@
 namespace Fiedsch\Data\Utility;
 
 use Fiedsch\Data\File\CsvReader;
+use League\Csv\InvalidArgument;
+use LogicException;
+use RuntimeException;
+use function is_int;
+use function in_array;
 
 /*
- * FIXME: in case of self::MIXED case tokens make sure we will note generate
- * 'Abc1' and 'aBc1' which are technically two destinct tokens but look the
- * same to humans (or software that does its comparisons case insensitive).
+ * FIXME: in case of self::MIXED case tokens make sure we will not generate
+ * 'Abc1' and 'aBc1' which are technically two distinct tokens but look the
+ * same to humans (or software that does its comparisons case-insensitive).
  *
  * If we use all LOWER or all UPPER tokens this can not happen.
  * So maybe MIXED is not a good idea and should be removed?
@@ -29,44 +34,29 @@ class TokenCreator
 
     const DEFAULT_LENGTH = 12;
 
-    /**
-     * @var int
-     */
-    protected $length;
+    protected int $length;
 
-    /**
-     * @var int
-     */
-    protected $case;
+    protected int $case;
 
-    /**
-     * @var array
-     */
-    protected $generated;
+    protected array $generated;
 
-    /**
-     * @var array
-     */
-    protected $tokensReadFromFile;
+    protected array|null $tokensReadFromFile;
 
-    /**
-     * @var array
-     */
-    protected $tokenChars;
+    protected array $tokenChars;
 
     /**
      * @param int $length
      * @param int $case
      *
-     * @throws \LogicException
+     * @throws LogicException
      */
-    public function __construct($length = self::DEFAULT_LENGTH, $case = self::UPPER)
+    public function __construct(int $length = self::DEFAULT_LENGTH, int $case = self::UPPER)
     {
         if (!is_int($length) || $length < 1) {
-            throw new \LogicException("token length must be a positive integer");
+            throw new LogicException("token length must be a positive integer");
         }
         if (!in_array($case, [self::LOWER, self::UPPER, self::MIXED])) {
-            throw new \LogicException(sprintf("token case must be one of %s=LOWER, %s=UPPER or %s=MIXED",
+            throw new LogicException(sprintf("token case must be one of %s=LOWER, %s=UPPER or %s=MIXED",
                 self::LOWER, self::UPPER, self::MIXED));
         }
         $this->length = $length;
@@ -79,7 +69,7 @@ class TokenCreator
     /**
      * Initialize the list of characters that are used to create tokens
      */
-    protected function initializeTokenCharacters()
+    protected function initializeTokenCharacters(): void
     {
         $allowed = 'abcdefghijklmnopqrstuvwxyz';
         $allowed .= strtoupper($allowed);
@@ -95,18 +85,18 @@ class TokenCreator
      *
      * @return string the newly created unique token
      *
-     * @throws \RuntimeException
+     * @throws RuntimeException
      */
-    public function getUniqueToken()
+    public function getUniqueToken(): string
     {
         $tries = 0;
-        $candidate = $this->cretateToken();
+        $candidate = $this->createToken();
         // give up and throw an exception if it seems impossible to create a unique token
         while ($tries++ < 5 && in_array($candidate, $this->generated)) {
-            $candidate = $this->cretateToken();
+            $candidate = $this->createToken();
         }
         if (in_array($candidate, $this->generated)) {
-            throw new \RuntimeException("failed to create a new unique token");
+            throw new RuntimeException("failed to create a new unique token");
         }
 
         $this->generated[] = $candidate;
@@ -117,34 +107,34 @@ class TokenCreator
     /**
      * Generate a random token according to the rules (length and case)
      * or return the next token read from a file. Tokens read from file will
-     * will be left as they are (e.g. will not be shortened if they are longer
+     * be left as they are (e.g. will not be shortened if they are longer
      * than the specified length). Still length and case are checked and will
      * throw exceptions if the rules are not satisfied.
      *
      * @return string a randomly generated token
      *
-     * @throws \LogicException
+     * @throws LogicException
      */
-    public function cretateToken()
+    public function createToken(): string
     {
         // if we have read tokens from file: use them
         if (null !== $this->tokensReadFromFile) {
-            if (count($this->tokensReadFromFile) == 0) {
-                throw new \LogicException("you requested more tokens than were read from file");
+            if (count($this->tokensReadFromFile) === 0) {
+                throw new LogicException("you requested more tokens than were read from file");
             }
             $token = array_shift($this->tokensReadFromFile);
             // check requirements
             if (strlen($token) < $this->length) {
-                throw new \LogicException(
+                throw new LogicException(
                     sprintf("tokens read from file are too short (current length setting is '%s').",
                         $this->length
                     ));
             }
             if ($this->case == self::LOWER && preg_match("/[A-Z]/", $token)) {
-                throw new \LogicException("you requested lowercase tokens but the token contains uppercase letters");
+                throw new LogicException("you requested lowercase tokens but the token contains uppercase letters");
             }
             if ($this->case == self::UPPER && preg_match("/[a-z]/", $token)) {
-                throw new \LogicException("you requested uppercase tokens but the token contains lowercase letters");
+                throw new LogicException("you requested uppercase tokens but the token contains lowercase letters");
             }
             return $token;
         }
@@ -212,7 +202,7 @@ class TokenCreator
      *
      * @return string
      */
-    protected function getTokenCharacters($count = 1)
+    protected function getTokenCharacters(int $count = 1): string
     {
         $result = '';
         for ($i = 0; $i < $count; $i++) {
@@ -226,8 +216,10 @@ class TokenCreator
      *  with no header!).
      *
      * @param string $delimiter as expected by Fiedsch\Data\File\CsvReader
+     *
+     * @throws InvalidArgument
      */
-    public function readFromFile($filepath, $delimiter = "\t")
+    public function readFromFile(string $filepath, string $delimiter = "\t"): void
     {
         $reader = new CsvReader($filepath, $delimiter);
         $this->tokensReadFromFile = [];

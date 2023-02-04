@@ -10,6 +10,8 @@
 
 namespace Fiedsch\Data\File;
 
+use RuntimeException;
+
 /**
  * Class File
  * @package Fiedsch\Data
@@ -31,12 +33,12 @@ class File
     /**
      * @var string the absolute path of the file we are working on
      */
-    protected $filepath;
+    protected string $filepath;
 
     /**
-     * @var int number of the most recently read or writtenline of the file.
+     * @var int number of the most recently read or written line of the file.
      */
-    protected $lineNumber;
+    protected int $lineNumber = 0;
 
     /**
      * @var resource
@@ -50,7 +52,7 @@ class File
      * @param string $mode the file mode (see PHPs fopen() $mode parameter;
      *   http://php.net/manual/de/function.fopen.php)
      */
-    public function __construct($filepath, $mode)
+    public function __construct(string $filepath, string $mode)
     {
 
         $realpath = $filepath;
@@ -62,27 +64,27 @@ class File
         }
 
         if (!$realpath) {
-            throw new \RuntimeException("failed constructing the path to file '$filepath'.");
+            throw new RuntimeException("failed constructing the path to file '$filepath'.");
         }
 
         if ($mode === 'r' && !file_exists($realpath)) {
-            throw new \RuntimeException("file '$filepath' does not exist. checked '$realpath'.");
+            throw new RuntimeException("file '$filepath' does not exist. checked '$realpath'.");
         }
 
         if (is_dir($realpath)) {
-            throw new \RuntimeException("'$realpath' is a directory.");
+            throw new RuntimeException("'$realpath' is a directory.");
         }
 
         $this->filepath = $realpath;
 
         if (!in_array($mode, ['r', 'w', 'a', 'x', 'c'])) {
-            throw new \RuntimeException("invalid mode '$mode' for file.");
+            throw new RuntimeException("invalid mode '$mode' for file.");
         }
 
         $this->handle = fopen($this->filepath, $mode);
 
         if (!$this->handle) {
-            throw new \RuntimeException("invalid file handle.");
+            throw new RuntimeException("invalid file handle.");
         }
 
     }
@@ -98,7 +100,7 @@ class File
     /**
      * Close the file.
      */
-    public function close()
+    public function close(): void
     {
         if ($this->handle && get_resource_type($this->handle) === 'file') {
             fclose($this->handle);
@@ -110,7 +112,7 @@ class File
      *
      * @return string return the absolute path for the file.
      */
-    public function getFilePath()
+    public function getFilePath(): string
     {
         return $this->filepath;
     }
@@ -120,7 +122,7 @@ class File
      *
      * @return int the number of the most recently read or written line.
      */
-    public function getLineNumber()
+    public function getLineNumber(): int
     {
         return $this->lineNumber;
     }

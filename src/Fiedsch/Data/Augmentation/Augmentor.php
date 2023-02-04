@@ -12,6 +12,7 @@
 namespace Fiedsch\Data\Augmentation;
 
 use Pimple\Container;
+use RuntimeException;
 
 /**
  * Class Augmentor
@@ -40,7 +41,7 @@ class Augmentor extends Container
      *
      * @param array $values
      */
-    public function __construct($values = [])
+    public function __construct(array $values = [])
     {
         parent::__construct($values);
     }
@@ -53,19 +54,19 @@ class Augmentor extends Container
      *
      * @return array the original data (left unchanged) and the augmented data.
      */
-    public function augment($data)
+    public function augment(array $data): array
     {
         // initialize
         $this[self::KEY_AUGMENTED] = [];
         // get rules
         $rulekeys = array_filter($this->keys(), function($key) {
-            return strpos($key, self::PREFIX_RULE) === 0;
+            return str_starts_with($key, self::PREFIX_RULE);
         });
         // apply rules
         foreach ($rulekeys as $rulename) {
             $augmentation_step = $this[$rulename]($this, $data);
             if (!is_array($augmentation_step)) {
-                throw new \RuntimeException("augmentaion rule '$rulename' did not produce data. Make sure to return the array of augmented data.");
+                throw new RuntimeException("augmentation rule '$rulename' did not produce data. Make sure to return the array of augmented data.");
             }
             // make the augmented data so far available to the next rule
             $this[self::KEY_AUGMENTED] = array_merge($this[self::KEY_AUGMENTED], $augmentation_step);
@@ -84,25 +85,25 @@ class Augmentor extends Container
     }
 
     /**
-     * Check if all of the required columns (fields) have been set during the augmentaion steps.
+     * Check if the required columns (fields) have been set during the augmentation steps.
      * Throw an exception if a column is missing.
      * Also check if additional columns (not specified in the required columns) are present.
      * This will also throw an exception.
      *
-     * @throws \RuntimeException
+     * @throws RuntimeException
      */
-    protected function checkAugmented()
+    protected function checkAugmented(): void
     {
         if ($this->hasRequiredColumnsSpecification()) {
             foreach ($this[self::KEY_REQUIRED_COLNAMES] as $key) {
                 if (!array_key_exists($key, $this[self::KEY_AUGMENTED])) {
-                    throw new \RuntimeException("required column '$key' does not exist in augmented data'");
+                    throw new RuntimeException("required column '$key' does not exist in augmented data'");
                 }
             }
             // Additionally check if we have data for columns not specified in $this[self::KEY_REQUIRED_COLNAMES]
             $key_mismatch = array_diff(array_keys($this[self::KEY_AUGMENTED]), $this[self::KEY_REQUIRED_COLNAMES]);
             if (!empty($key_mismatch)) {
-                throw new \RuntimeException("found keys not specified as required field: " . json_encode(array_values($key_mismatch)));
+                throw new RuntimeException("found keys not specified as required field: " . json_encode(array_values($key_mismatch)));
             }
         }
 
@@ -110,20 +111,20 @@ class Augmentor extends Container
             // Side effect(?): specifying column order has the same effect as setting required columns (see above).
             foreach ($this[self::KEY_COLOUMN_ORDER] as $key) {
                 if (!array_key_exists($key, $this[self::KEY_AUGMENTED])) {
-                    throw new \RuntimeException("required column '$key' does not exist in augmented data'");
+                    throw new RuntimeException("required column '$key' does not exist in augmented data'");
                 }
             }
             // Check if we have data for columns not specified in $this[self::KEY_COLOUMN_ORDER]
             $key_mismatch = array_diff(array_keys($this[self::KEY_AUGMENTED]), $this[self::KEY_COLOUMN_ORDER]);
             if (!empty($key_mismatch)) {
-                throw new \RuntimeException("found keys not specified in column order: " . json_encode(array_values($key_mismatch)));
+                throw new RuntimeException("found keys not specified in column order: " . json_encode(array_values($key_mismatch)));
             }
         }
 
         if ($this->hasRequiredColumnsSpecification() && $this->hasColumnOrderSpecification()) {
             // check if bot specifications do not contradict
             if (array_diff($this[self::KEY_COLOUMN_ORDER], $this[self::KEY_REQUIRED_COLNAMES])) {
-                throw new \RuntimeException("specification mismatch required columns and column order do not match");
+                throw new RuntimeException("specification mismatch required columns and column order do not match");
             }
         }
     }
@@ -133,7 +134,7 @@ class Augmentor extends Container
      *
      * @param array $colnames the names of the columns that have to be set during the augmentation steps.
      */
-    public function setRequiredColumns(array $colnames)
+    public function setRequiredColumns(array $colnames): void
     {
         $this[self::KEY_REQUIRED_COLNAMES] = $colnames;
     }
@@ -141,7 +142,7 @@ class Augmentor extends Container
     /**
      * @return array
      */
-    public function getRequiredColumns()
+    public function getRequiredColumns(): array
     {
         return $this[self::KEY_REQUIRED_COLNAMES];
     }
@@ -155,15 +156,12 @@ class Augmentor extends Container
      *
      * @param array $colnames determines the order of the column output.
      */
-    public function setColumnOutputOrder(array $colnames)
+    public function setColumnOutputOrder(array $colnames): void
     {
         $this[self::KEY_COLOUMN_ORDER] = $colnames;
     }
 
-    /**
-     * @return array
-     */
-    public function getColumnOutputOrder()
+    public function getColumnOutputOrder(): array
     {
         return $this[self::KEY_COLOUMN_ORDER];
     }
@@ -173,16 +171,18 @@ class Augmentor extends Container
      *
      * @return boolean
      */
-    public function hasRequiredColumnsSpecification() {
+    public function hasRequiredColumnsSpecification(): bool
+    {
         return $this->offsetExists(self::KEY_REQUIRED_COLNAMES) && is_array($this[self::KEY_REQUIRED_COLNAMES]);
     }
 
     /**
-     * Do we have the a specification for the order in which the generated columns have to be output?
+     * Do we have the specification for the order in which the generated columns have to be output?
      *
-     * @return boolean
+     * @return bool
      */
-    public function hasColumnOrderSpecification() {
+    public function hasColumnOrderSpecification(): bool
+    {
         return $this->offsetExists(self::KEY_COLOUMN_ORDER) && is_array($this[self::KEY_COLOUMN_ORDER]);
     }
 
@@ -192,7 +192,7 @@ class Augmentor extends Container
      * @return array the augmented data so far (or an empty array, should this be called in the
      *   first augmentation step).
      */
-    public function getAugmentedSoFar()
+    public function getAugmentedSoFar(): array
     {
         if (!$this->offsetExists(self::KEY_AUGMENTED)) {
             $this[self::KEY_AUGMENTED] = [];
@@ -205,12 +205,12 @@ class Augmentor extends Container
      *
      * @param string $name the name of the augmentation rule
      * @param callable $rule the code that will be executed
-     * @throws \RuntimeException
+     * @throws RuntimeException
      */
-    public function addRule($name, callable $rule)
+    public function addRule(string $name, callable $rule): void
     {
         if (isset($this[self::rule($name)])) {
-            throw new \RuntimeException("rule '$name' already exists'");
+            throw new RuntimeException("rule '$name' already exists'");
         }
         $this[self::rule($name)] = $this->protect($rule);
     }
@@ -223,7 +223,7 @@ class Augmentor extends Container
      *
      * @return string key used to store the rule
      */
-    protected static function rule($name)
+    protected static function rule(string $name): string
     {
         return self::PREFIX_RULE . $name;
     }
@@ -243,11 +243,11 @@ class Augmentor extends Container
      * See also: https://github.com/silexphp/Pimple/issues/149
      * <quote>
      * fabpot commented on Jul 15, 2014
-     * To be more precise, Pimple stores parameters but it should have
+     * To be more precise, Pimple stores parameters, but it should have
      * no knowledge of the parameter value; Pimple just stores what you give it.
      * </quote>
      */
-    public function appendTo($key, $value)
+    public function appendTo(string $key, mixed $value): void
     {
         if (!$this->offsetExists($key)) {
             $this[$key] = [$value];
@@ -271,7 +271,8 @@ class Augmentor extends Container
      * @param $key
      * @param $value
      */
-    public function overwriteValue($key, $value) {
+    public function overwriteValue($key, $value): void
+    {
         $augmented = $this[self::KEY_AUGMENTED];
         $augmented[$key] = $value;
         $this[self::KEY_AUGMENTED] = $augmented;

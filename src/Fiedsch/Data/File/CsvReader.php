@@ -68,6 +68,7 @@ class CsvReader
         $this->csvReader->setHeaderOffset(0);
         $result = Statement::create()->process($this->csvReader);
         $this->csvRecordsIterator = $result->getRecords();
+        $this->csvRecordsIterator->rewind(); // see https://github.com/thephpleague/csv/issues/514#issuecomment-1901071961
         $this->header = $this->csvReader->getHeader();
         $this->lineNumber = 0;
     }
@@ -134,6 +135,9 @@ class CsvReader
      */
     public function getLine(int $mode = self::RETURN_EVERY_LINE): ?array
     {
+        if (!$this->csvRecordsIterator->valid()) {
+            return null;
+        }
         $row = $this->csvRecordsIterator->current();
         if (null === $row) {
             return null;

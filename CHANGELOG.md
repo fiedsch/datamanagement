@@ -2,6 +2,20 @@
 
 ## Development
 
+## Version 1.3.0
+
+* Assert compatibility with `league/csv` for versions `>= 9.12`
+
+
+## Version 1.2.0
+
+* Add type hints
+
+
+## Version 1.1.0
+
+* PHP 8.1 compatibility
+
 
 ## Version 1.0.1
 

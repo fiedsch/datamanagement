@@ -134,4 +134,14 @@ class CsvReaderTest extends TestCase
     // {
     //     $this->reader->readHeader();
     // }
+
+    public function testReadAllLines(): void
+    {
+        $recordsHandled = 0;
+        while (($this->reader->getLine(Reader::RETURN_EVERY_LINE)) !== null) {
+            ++$recordsHandled;
+        }
+        $this->assertSame(4, $recordsHandled);
+        $this->assertSame(4, $this->reader->getLineNumber());
+    }
 }

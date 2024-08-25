@@ -36,11 +36,11 @@ try {
     // The optional argument passed to the constructor can be used to specify an array of column
     // names that we expect to be set in the augmantation steps. If the steps fail
     // to set these columns an exception will be thrown.
-    // Additionally we can specify the column output order:
+    // Additionally we can specify the desired column output order:
     //
     // $augmentor = new Augmentor([Augmentor::KEY_REQUIRED_COLNAMES => ['email','token','study_id'], Augmentor::KEY_COLOUMN_ORDER => ['token','email','study_id']]);
     //
-    // The same in two steps (propably easier to read):
+    // The same in two steps (probably easier to read):
     // $augmentor = new Augmentor();
     // $augmentor->setRequiredColumns(['email','token','study_id']);
     // $augmentor->setColumnOutputOrder(['token','email','study_id']);
@@ -77,17 +77,17 @@ try {
 
     // Add augmentation rules to the Augmentor.
     // The order of the rules matters as each step
-    // will be passed the results of the previous steps.
+    // could access (and work with) the results of the previous steps.
 
     // Step one. Verify the email address.
     // As an example we only transform it to upper case.
 
     $augmentor->addRule('email', function(Augmentor $augmentor, $data) {
-        // if we need to access the resulst from previous augmentation steps (rules)
-        // $augmented = $augmentor->getAugmentedSoFar();
-        // otherwise initialize as empty array
-        // $augmented = array();
-        // or rely on PHP to properly handele uninitialized values.
+        // if we need to access the result from previous augmentation steps (rules)
+        // $asf = $augmentor->getAugmentedSoFar();
+
+        $augmented = [];
+
         $email = Helper::getBySC($data, 'D');
 
         $augmented['valid_email'] = $augmentor['validation']->isValidEmail($email);
@@ -105,27 +105,33 @@ try {
 
     $augmentor->addRule('token', new TokenRule());
 
-    // Drawing a sample with qouta for the ssmple cells
+    // Drawing a sample with quota for the ssmple cells
 
-    $augmentor->addRule('qouta', function(Augmentor $augmentor) {
-        $area_code = '0871'; // TODO extract from $augmentor>getAugmentedSoFar()
+    $augmentor->addRule('quota', function(Augmentor $augmentor) {
+        $augmented = [];
+
+        $area_code = '0871'; // Would typically be extracted from $augmentor>getAugmentedSoFar()
         $augmented['in_sample'] = $augmentor['quota']->add(1, $area_code) ? 1 : 0;
+
         return $augmented;
     });
 
     // Final step: add global variables
 
     $augmentor->addRule('globals', function(Augmentor $augmentor) {
-        //$augmented = $augmentor->getAugmentedSoFar();
+        $augmented = [];
+
+        //$asf = $augmentor->getAugmentedSoFar();
         $augmented['study_id'] = $augmentor['study_id'];
         $augmented['study_start'] = $augmentor['study_start'];
+
         return $augmented;
     });
 
 
     // Read and handle all lines containing data.
     // Empty lines are frequently generated when exporting data from a spreadsheet.
-    // They will appear as somethig like ;;;;;; in the export file (when ; is the delimiter).
+    // They will appear as something like ;;;;;; in the export file (when ; is the delimiter).
 
     // The header is automatically scanned and we use it to create a VariablenameMapper from
     // the names found in it.

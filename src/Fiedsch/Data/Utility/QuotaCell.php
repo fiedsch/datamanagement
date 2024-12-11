@@ -76,7 +76,7 @@ class QuotaCell
      * @param ?string $default the value that will be returned if there is no entry for the $key
      * @return ?string
      */
-    protected function getDeepArrayValue(string|array $key, array &$target, string $default = null): ?string
+    protected function getDeepArrayValue(string|array $key, array &$target, ?string $default = null): ?string
     {
         if (!is_array($key)) {
             if (!isset($target[$key])) {
@@ -139,7 +139,7 @@ class QuotaCell
      * @param string|null $default value that will be returned if there is no target for $key
      * @return int|null null if target is not set
      */
-    public function getTarget(string|array $key, string $default = null): ?int
+    public function getTarget(string|array $key, ?string $default = null): ?int
     {
         return $this->getDeepArrayValue($key, $this->targets, $default);
     }

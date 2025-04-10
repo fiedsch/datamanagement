@@ -66,7 +66,7 @@ class CsvReader
         $this->csvReader->setEnclosure($enclosure);
         $this->csvReader->setEscape($escape);
         $this->csvReader->setHeaderOffset(0);
-        $result = Statement::create()->process($this->csvReader);
+        $result = (new Statement())->process($this->csvReader);
         $this->csvRecordsIterator = $result->getRecords();
         $this->csvRecordsIterator->rewind(); // see https://github.com/thephpleague/csv/issues/514#issuecomment-1901071961
         $this->header = $this->csvReader->getHeader();

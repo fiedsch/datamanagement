@@ -215,6 +215,22 @@ class Augmentor extends Container
         $this[self::rule($name)] = $this->protect($rule);
     }
 
+    public function removeRule(string $name): void
+    {
+        if (isset($this[self::rule($name)])) {
+            unset($this[self::rule($name)]);
+        }
+    }
+
+    public function clearRules(): void
+    {
+        foreach ($this->keys() as $key) {
+            if (str_starts_with($key, self::PREFIX_RULE)) {
+                unset($this[$key]);
+            }
+        }
+    }
+
     /**
      * Syntactic sugar. Use Augmentor::rule('foo') to get the proper key for the 'foo' rule
      * (identical to using Augmentor::PREFIX_RULE.$name, but hopefully easier to read).

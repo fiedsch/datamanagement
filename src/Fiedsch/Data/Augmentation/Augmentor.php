@@ -209,7 +209,7 @@ class Augmentor extends Container
      */
     public function addRule(string $name, callable $rule): void
     {
-        if (isset($this[self::rule($name)])) {
+        if ($this->offsetExists(self::rule($name))) {
             throw new RuntimeException("rule '$name' already exists'");
         }
         $this[self::rule($name)] = $this->protect($rule);
@@ -217,8 +217,8 @@ class Augmentor extends Container
 
     public function removeRule(string $name): void
     {
-        if (isset($this[self::rule($name)])) {
-            unset($this[self::rule($name)]);
+        if ($this->offsetExists(self::rule($name))) {
+            $this->offsetUnset(self::rule($name));
         }
     }
 
@@ -226,7 +226,7 @@ class Augmentor extends Container
     {
         foreach ($this->keys() as $key) {
             if (str_starts_with($key, self::PREFIX_RULE)) {
-                unset($this[$key]);
+                $this->offsetUnset($key);
             }
         }
     }

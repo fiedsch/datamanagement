@@ -294,4 +294,18 @@ class AugmentorTest extends TestCase
         $a->augment([]);
     }
 
+    public function testSetAndUnsetRules(): void
+    {
+        $a = new Augmentor();
+        $a->addRule('foo', function(Augmentor $a) { return 'foo'; });
+        $a->addRule('bar', function(Augmentor $a) { return 'bar'; });
+        $this->assertEquals( ['rule.foo', 'rule.bar'], array_filter($a->keys(), fn($el) => substr($el, 0, 5) === Augmentor::PREFIX_RULE));
+        $a->removeRule('foo');
+        $this->assertEquals( ['rule.bar'], array_filter($a->keys(), fn($el) => substr($el, 0, 5) === Augmentor::PREFIX_RULE));
+        $a->addRule('baz', function(Augmentor $a) { return 'baz'; });
+        $a->clearRules();
+        $this->assertEquals( [], $a->keys());
+
+    }
+
 }

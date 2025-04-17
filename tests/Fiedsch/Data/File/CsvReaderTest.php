@@ -144,4 +144,18 @@ class CsvReaderTest extends TestCase
         $this->assertSame(4, $recordsHandled);
         $this->assertSame(4, $this->reader->getLineNumber());
     }
+
+    public function testGetMappedLine(): void
+    {
+        $this->assertEquals(
+            ['one'=>1, 'two'=>2, 'three'=>3, 'four'=>4, 'five'=>5, 'six'=>6],
+            CsvReader::getMappedLine(['one', 'two', 'three', 'four', 'five', 'six'], [1,2,3,4,5,6])
+        );
+
+        $this->expectException(\RuntimeException::class);
+        $this->assertEquals(
+            ['one'=>1, 'two'=>2, 'three'=>3, 'four'=>4, 'five'=>5, 'six'=>6],
+            CsvReader::getMappedLine(['one', 'two', 'three', 'four', 'five', 'six'], [1,2,3,4,5/*,6*/])
+        );
+    }
 }

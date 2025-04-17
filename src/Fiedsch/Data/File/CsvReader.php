@@ -17,6 +17,9 @@ use League\Csv\Reader as LeagueCsvReader;
 use League\Csv\Statement;
 use Iterator;
 use Exception;
+use RuntimeException;
+use function count;
+use function array_combine;
 use const E_USER_DEPRECATED;
 
 /**
@@ -149,6 +152,37 @@ class CsvReader
         }
 
         return array_values($row);
+    }
+
+    /**
+     * Return the current line as an associative array where the keys are the column names from the header
+     * and the values are the respective values.
+     *
+     * Example
+     * foo | bar | baz
+     * 1.1   | 1.2   | 1.3
+     * 2.1   | 2.2   | 2.3
+     * ...
+     *
+     * The header would by ['foo', 'bar', 'baz']
+     * and the data lines would be e.g. ['1.1', '1.2', '1.3']
+     *
+     * The result would be :
+     * ['foo' => '1.1', 'bar' => '1.2', 'baz' => '1.3']
+     *
+     * @throws RuntimeException
+     */
+    public static function getMappedLine(array $data, array $headerNames): array
+    {
+        if (count($data) !== count($headerNames)) {
+            throw new RuntimeException(sprintf(
+                    'Header and data mismatch (%d vs %d entries',
+                    count($headerNames), count($data)
+                )
+            );
+        }
+
+        return array_combine($data,$headerNames);
     }
 
     /**

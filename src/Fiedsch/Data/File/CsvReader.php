@@ -182,7 +182,7 @@ class CsvReader
             );
         }
 
-        return array_combine($data,$headerNames);
+        return array_combine($data, $headerNames);
     }
 
     /**

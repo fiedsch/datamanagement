@@ -11,6 +11,16 @@
 namespace Fiedsch\Data\Utility;
 
 use RuntimeException;
+use ValueError;
+use function array_filter;
+use function array_flip;
+use function array_map;
+use function array_keys;
+use function array_key_exists;
+use function array_combine;
+use function trim;
+use function count;
+
 
 class VariablenameMapper
 {
@@ -71,4 +81,17 @@ class VariablenameMapper
     {
         return $this->lookup;
     }
+
+    /**
+     * Convenience: get $data as an associative array with keys from $this->lookup
+     * (which is generated form the constructor's argument $names)
+     *
+     * @throws ValueError
+     * @throws RuntimeException
+     */
+    public function getKeyValueData(array $data): array
+    {
+        return array_combine(array_keys($this->lookup), $data);
+    }
+
 }

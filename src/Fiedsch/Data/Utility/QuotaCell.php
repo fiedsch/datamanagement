@@ -10,6 +10,7 @@
 namespace Fiedsch\Data\Utility;
 
 use RuntimeException;
+use LogicException;
 
 /**
  * Class QuotaCell
@@ -75,12 +76,17 @@ class QuotaCell
      * @param array $target the target array from which we try to get the value for the $key
      * @param ?string $default the value that will be returned if there is no entry for the $key
      * @return ?string
+     *
+     * @throws RuntimeException
      */
     protected function getDeepArrayValue(string|array $key, array &$target, ?string $default = null): ?string
     {
         if (!is_array($key)) {
             if (!isset($target[$key])) {
                 return $default;
+            }
+            if (is_array($target[$key])) {
+                throw new LogicException("Sorry there is something wrong: Expected scalar but found array for quota key $key");
             }
             return $target[$key];
         }

@@ -118,7 +118,7 @@ $numTokens = 1000;
 
 while ($numTokens-- > 0) {
   $token = $creator->getUniqueToken();
-  $output->printLine([$token]);
+  $output->printLine($token);
 }
 $output->close();
 ```

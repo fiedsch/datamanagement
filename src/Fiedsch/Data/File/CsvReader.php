@@ -64,7 +64,7 @@ class CsvReader
      */
     public function __construct(string $filepath, string $delimiter, string $enclosure = '"', string $escape = "\\")
     {
-        $this->csvReader = LeagueCsvReader::createFromPath($filepath);
+        $this->csvReader = LeagueCsvReader::from($filepath);
         $this->csvReader->setDelimiter($delimiter);
         $this->csvReader->setEnclosure($enclosure);
         $this->csvReader->setEscape($escape);
